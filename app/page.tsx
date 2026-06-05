@@ -86,7 +86,6 @@ export default async function Home() {
           </h2>
 
         </div>
-
         <div className="grid md:grid-cols-3 gap-8">
 {data?.map((event) => (
   <Link
