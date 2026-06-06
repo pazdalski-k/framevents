@@ -9,7 +9,7 @@ export default async function Home() {
   return (
     <main className="bg-black text-white min-h-screen">
 
-      <section className="relative h-screen overflow-hidden">
+      <section className="relative min-h-[85vh] overflow-hidden">
 
         <img
           src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?q=80&w=1800&auto=format&fit=crop"
@@ -17,13 +17,13 @@ export default async function Home() {
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
 
-       <div className="absolute inset-0 bg-black/50" />
+       <div className="absolute inset-0 bg-black/35" />
 
         <div className="relative z-10 h-full flex flex-col">
 
           <nav className="flex justify-between items-center px-8 py-6">
 
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-4xl font-black tracking-tight">
               EVENTFRAME
             </h1>
 
@@ -73,38 +73,45 @@ export default async function Home() {
         </div>
 
       </section>
-      <section className="max-w-7xl mx-auto px-8 py-24">
-
-        <div className="mb-14">
+      <section className="max-w-[1600px] mx-auto px-12 py-32">
+        <div className="mb-20 text-center">
 
           <p className="uppercase tracking-[6px] text-white/40 text-sm">
             Events
           </p>
 
-          <h2 className="text-6xl font-bold mt-4">
+          <h2 className="text-7xl font-bold mt-4">
             Featured Events
           </h2>
 
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-12">
 {data?.map((event) => (
   <Link
   href={`/event/${event.id}`}
     key={event.id}
-    className="bg-[#111111] rounded-[32px] overflow-hidden cursor-pointer hover:scale-[1.02] transition"
+    className="bg-[#111111] rounded-[32px] overflow-hidden cursor-pointer hover:-translate-y-3 hover:scale-[1.02] hover:border-white/30 transition-all duration-500 border border-white/10"
   >
-    <img
-  src={event.image_url}
-  alt={event.title}
-  className="w-full aspect-[4/3] object-cover transition duration-500 hover:scale-105"
-/>
+    <div className="relative overflow-hidden">
+  <img
+    src={event.image_url}
+    alt={event.title}
+    className="w-full h-[320px] object-cover transition duration-700 hover:scale-110"
+  />
+
+  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+<div className="absolute top-4 left-4">
+  <p className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-xl text-[11px] uppercase tracking-[3px] text-white border border-white/20">
+    {event.category}
+  </p>
+</div>
+
+</div>
 
     <div className="p-6">
-      <p className="text-sm uppercase text-white/50">
-        {event.category}
-      </p>
-
-      <h3 className="text-3xl font-bold mt-2">
+    
+      <h3 className="text-3xl font-bold mt-2 tracking-tight">
         {event.title}
       </h3>
 
@@ -112,11 +119,11 @@ export default async function Home() {
         {event.location}
       </p>
 
-<p className="text-white/50 mt-2">
+<p className="text-white/40 mt-3 text-sm">
   📅 {event.date}
 </p>
 
-      <p className="text-white/50 mt-4 line-clamp-3">
+      <p className="text-white/50 mt-3 line-clamp-2">
   {event.description}
 </p>
     </div>
