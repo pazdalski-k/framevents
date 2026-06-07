@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { supabase } from './lib/supabase'
+
 export default async function Home() {
   const { data, error } = await supabase
-  .from('events')
-  .select('*')
-  .order('date', { ascending: true })
+    .from('events')
+    .select('*')
+    .order('date', { ascending: true })
 
   return (
     <main className="bg-black text-white min-h-screen">
@@ -88,29 +89,32 @@ export default async function Home() {
         <div className="grid md:grid-cols-2 gap-12">
 {data?.map((event) => (
   <Link
-  href={`/event/${event.id}`}
+    href={`/event/${event.id}`}
     key={event.id}
-    className="bg-[#111111] rounded-[32px] overflow-hidden cursor-pointer hover:-translate-y-3 hover:scale-[1.02] hover:border-white/30 transition-all duration-500 border border-white/10"
+    className="group bg-[#111111] rounded-[32px] overflow-hidden cursor-pointer hover:-translate-y-3 hover:scale-[1.02] hover:border-white/30 hover:shadow-[0_20px_80px_rgba(255,255,255,0.08)] transition-all duration-500 border border-white/10"
   >
     <div className="relative overflow-hidden">
-  <img
-    src={event.image_url}
-    alt={event.title}
-    className="w-full h-[320px] object-cover transition duration-700 hover:scale-110"
-  />
 
-  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <img
+        src={event.image_url}
+        alt={event.title}
+        className="w-full h-[320px] object-cover transition duration-700 group-hover:scale-110"
+      />
 
-<div className="absolute top-4 left-4">
-  <p className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-xl text-[11px] uppercase tracking-[3px] text-white border border-white/20">
-    {event.category}
-  </p>
-</div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-</div>
+      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-all duration-500" />
+
+      <div className="absolute top-4 left-4">
+        <p className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-xl text-[11px] uppercase tracking-[3px] text-white border border-white/20">
+          {event.category}
+        </p>
+      </div>
+
+    </div>
 
     <div className="p-6">
-    
+
       <h3 className="text-3xl font-bold mt-2 tracking-tight">
         {event.title}
       </h3>
@@ -119,16 +123,21 @@ export default async function Home() {
         {event.location}
       </p>
 
-<p className="text-white/40 mt-3 text-sm">
-  📅 {event.date}
-</p>
+      <p className="text-white/40 mt-3 text-sm">
+        📅 {event.date}
+      </p>
+
+      <p className="text-white/40 mt-2 text-sm">
+        📸 Photos: {event.photos_count}
+      </p>
 
       <p className="text-white/50 mt-3 line-clamp-2">
-  {event.description}
-</p>
+        {event.description}
+      </p>
+
     </div>
   </Link>
-))}          
+))}
           </div>
       </section>
             <section className="max-w-7xl mx-auto px-8 py-28">

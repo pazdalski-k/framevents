@@ -102,37 +102,73 @@ export default function AdminPage() {
 
       newEvent = createdEvent
 
+  
+
       if (error) {
         alert(JSON.stringify(error))
         return
       }
     }
     if (images) {
-      for (const file of Array.from(images)) {
-        const photoFileName = `${Date.now()}-${file.name}`
 
-        const { error: photoUploadError } =
-          await supabase.storage
-            .from('event-photos')
-            .upload(photoFileName, file)
+  console.log('EVENT ID:', newEvent?.id)
+  console.log('FILES COUNT:', images.length)
 
-        if (photoUploadError) continue
+  for (const file of Array.from(images)) {
 
-        const { data: photoData } =
-          supabase.storage
-            .from('event-photos')
-            .getPublicUrl(photoFileName)
+    console.log('UPLOADING:', file.name)
+
+  
+
+    const photoFileName =
+      `${Date.now()}-${file.name}`
+
+    const { error: photoUploadError } =
+      await supabase.storage
+        .from('event-photos')
+        .upload(photoFileName, file)
+
+    if (photoUploadError) {
+      console.log(
+        'UPLOAD ERROR:',
+        photoUploadError
+      )
+      continue
+    }
+
+    const { data: photoData } =
+      supabase.storage
+        .from('event-photos')
+        .getPublicUrl(photoFileName)
+
+    const { error: photoInsertError } =
+      await supabase
+        .from('photos')
+        .insert([
+          {
+            event_id: newEvent.id,
+            image_url: photoData.publicUrl,
+          },
+        ])
 
         await supabase
-          .from('photos')
-          .insert([
-            {
-              event_id: newEvent.id,
-              image_url: photoData.publicUrl,
-            },
-          ])
-      }
-    }
+  .from('events')
+  .update({
+    photos_count: images.length,
+  })
+  .eq('id', newEvent.id)
+
+    console.log(
+      'PHOTO INSERT ERROR:',
+      photoInsertError
+    )
+
+    console.log(
+  'PHOTO URL:',
+  photoData.publicUrl
+)
+  }
+}
     alert('Event created!')
     loadEvents()
 

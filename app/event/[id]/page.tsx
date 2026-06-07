@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
+import Gallery from '../../components/Gallery'
 
 export default async function EventPage({
   params,
@@ -13,11 +14,12 @@ export default async function EventPage({
     .eq('id', id)
     .single()
 
-    const { data: photos } = await supabase
+   const { data: photos } = await supabase
   .from('photos')
   .select('*')
-  .eq('event_id', id)
+  .eq('event_id', Number(id))
 
+console.log('EVENT ID:', id)
 console.log('PHOTOS:', photos)
 
   if (!event) {
@@ -97,16 +99,7 @@ console.log('PHOTOS:', photos)
   <h2 className="text-5xl font-bold mb-12">
     Event Photos
   </h2>
-<div className="columns-1 md:columns-2 gap-8 space-y-8">
-  {photos?.map((photo) => (
-    <img
-  key={photo.id}
-  src={photo.image_url}
-  alt=""
-  className="w-full mb-8 rounded-2xl hover:scale-[1.02] transition duration-300 cursor-pointer"
-/>
-  ))}
-</div>
+<Gallery photos={photos || []} />
   </div>
 
       </div>
