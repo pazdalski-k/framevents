@@ -64,6 +64,22 @@ async function createWatermarkedPreview(file: File) {
   })
 }
 
+function getEventUrl(eventId: number) {
+  if (typeof window === 'undefined') {
+    return ''
+  }
+
+  return `${window.location.origin}/event/${eventId}`
+}
+
+function getQrUrl(eventId: number) {
+  const eventUrl = getEventUrl(eventId)
+
+  return `https://api.qrserver.com/v1/create-qr-code/?size=800x800&data=${encodeURIComponent(
+    eventUrl
+  )}`
+}
+
 export default function AdminPage() {
   const [title, setTitle] = useState('')
   const [date, setDate] = useState('')
@@ -90,8 +106,8 @@ export default function AdminPage() {
   }
 
   const createEvent = async () => {
-    if (!editingId && (!images || images.length === 0)) {
-      alert('Wybierz zdjęcie')
+    if (!title || !date || !location) {
+      alert('Wpisz tytuł, datę i lokalizację wydarzenia')
       return
     }
 
@@ -121,16 +137,21 @@ export default function AdminPage() {
     let newEvent
 
     if (editingId) {
+      const updateData: any = {
+        title,
+        date,
+        location,
+        description,
+        category,
+      }
+
+      if (imageUrl) {
+        updateData.image_url = imageUrl
+      }
+
       const { data: updatedEvent, error } = await supabase
         .from('events')
-        .update({
-          title,
-          date,
-          location,
-          description,
-          category,
-          image_url: imageUrl || undefined,
-        })
+        .update(updateData)
         .eq('id', editingId)
         .select()
         .single()
@@ -151,7 +172,8 @@ export default function AdminPage() {
             location,
             description,
             category,
-            image_url: imageUrl,
+            image_url: imageUrl || '',
+            photos_count: 0,
           },
         ])
         .select()
@@ -165,7 +187,7 @@ export default function AdminPage() {
       }
     }
 
-    if (images) {
+    if (images && images.length > 0) {
       for (const file of Array.from(images)) {
         const timestamp = Date.now()
 
@@ -264,10 +286,6 @@ export default function AdminPage() {
         await supabase.storage
           .from('event-photos-preview')
           .remove(previewFiles)
-
-        await supabase.storage
-          .from('event-photos')
-          .remove(previewFiles)
       }
 
       if (hdFiles.length > 0) {
@@ -344,13 +362,23 @@ export default function AdminPage() {
           className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
         />
 
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={(e) => setImages(e.target.files)}
-          className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
-        />
+        <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-5">
+          <p className="text-white/70 mb-3">
+            Cover photo / event photos — optional
+          </p>
+
+          <p className="text-white/40 text-sm mb-4">
+            You can create an event without photos. Visitors will see a 24–48h availability message and can leave their email.
+          </p>
+
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => setImages(e.target.files)}
+            className="w-full text-white text-lg"
+          />
+        </div>
 
         <button
           type="submit"
@@ -369,7 +397,7 @@ export default function AdminPage() {
           {events.map((event) => (
             <div
               key={event.id}
-              className="flex items-center justify-between p-6 rounded-2xl bg-zinc-900 border border-zinc-800"
+              className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 rounded-2xl bg-zinc-900 border border-zinc-800"
             >
               <div>
                 <h3 className="font-bold text-xl">
@@ -383,15 +411,41 @@ export default function AdminPage() {
                 <p className="text-white/40 text-sm mt-1">
                   {event.photos_count || 0} photos
                 </p>
+
+                {(event.photos_count || 0) === 0 && (
+                  <p className="text-yellow-400 text-sm mt-2">
+                    Waiting page active: 24–48h message + email notification form
+                  </p>
+                )}
+
+                <p className="text-white/30 text-xs mt-2">
+                  {getEventUrl(event.id)}
+                </p>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href={`/event/${event.id}`}
+                  className="px-4 py-2 rounded-xl bg-white text-black hover:bg-zinc-200 transition"
+                >
+                  View
+                </Link>
+
                 <Link
                   href={`/admin/photos/${event.id}`}
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 transition"
                 >
                   Photos
                 </Link>
+
+                <a
+                  href={getQrUrl(event.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 transition"
+                >
+                  QR Code
+                </a>
 
                 <button
                   onClick={() => {
