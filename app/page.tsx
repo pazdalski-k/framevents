@@ -66,12 +66,12 @@ return (
   </span>
 
   <h1 className="text-3xl font-semibold tracking-tight">
-    EventFrame
+    FrameEvent
   </h1>
 </div>
 
     <p className="text-white/50 text-sm mt-1 tracking-wide">
-  Normandy Event Photography
+  Event Photography in Normandy
 </p>
   </div>
 
@@ -412,7 +412,7 @@ photos.
         </div>
       </section>
 
-      <section id="contact" className="max-w-7xl mx-auto px-8 py-28">
+            <section id="account" className="max-w-7xl mx-auto px-8 py-28">
         <div className="mb-14">
           <p className="uppercase tracking-[6px] text-white/40 text-sm">
             ACCOUNT
@@ -427,7 +427,7 @@ photos.
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h3 className="text-4xl font-bold">
-                Your EventFrame Account
+                Your FrameEvent Account
               </h3>
 
               <p className="text-white/60 text-xl mt-6 leading-relaxed">
@@ -502,11 +502,72 @@ photos.
         </div>
       </section>
 
+<section id="contact" className="max-w-7xl mx-auto px-8 py-28">
+  <div className="mb-14">
+    <p className="uppercase tracking-[6px] text-white/40 text-sm">
+      CONTACT
+    </p>
+
+    <h2 className="text-6xl font-bold mt-4">
+      Work with FrameEvent
+    </h2>
+
+    <p className="text-white/60 text-xl mt-6 max-w-3xl leading-relaxed">
+      For event coverage, accreditation, private sessions or photo requests,
+      contact Krzysztof Pazdalski directly.
+    </p>
+  </div>
+
+  <div className="bg-[#111111] border border-white/10 rounded-[40px] p-10 md:p-14">
+    <div className="grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h3 className="text-3xl font-bold mb-6">
+          Contact details
+        </h3>
+
+        <div className="space-y-4 text-white/60 text-lg">
+          <p>📍 Normandy, France</p>
+
+          <a
+            href="mailto:contact@frameevents.fr"
+            className="block hover:text-white transition"
+          >
+            ✉️ contact@frameevents.fr
+          </a>
+
+          <a
+            href="https://www.instagram.com/kristof.pazdalski"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block hover:text-white transition"
+          >
+            📸 Instagram
+          </a>
+        </div>
+      </div>
+
+      <div className="bg-black border border-white/10 rounded-[32px] p-8">
+        <p className="text-white/60 leading-relaxed">
+          Use this contact for event photography, media accreditation,
+          gallery questions and commercial photo sessions.
+        </p>
+
+        <a
+          href="mailto:contact@frameevents.fr"
+          className="inline-block mt-8 bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition"
+        >
+          Send email
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
       <footer className="max-w-7xl mx-auto px-8 py-20 border-t border-white/10">
         <div className="grid md:grid-cols-3 gap-16">
           <div>
             <h3 className="text-3xl font-bold mb-6">
-              EVENTFRAME
+              FRAMEEVENT
             </h3>
 
             <p className="text-white/60 leading-relaxed">
@@ -514,25 +575,39 @@ photos.
             </p>
 
             <div className="mt-8 space-y-2 text-white/60">
-              <p>Instagram</p>
-              <p>Contact</p>
-              <p>Privacy Policy</p>
-              <p>Terms of Service</p>
-            </div>
-          </div>
+  <a
+    href="mailto:contact@frameevents.fr"
+    className="block hover:text-white transition"
+  >
+    Contact
+  </a>
 
-          <div>
-            <h4 className="text-xl font-bold mb-6">
-              Technologies
-            </h4>
+  <a
+    href="https://www.instagram.com/kristof.pazdalski"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="block hover:text-white transition"
+  >
+    Instagram
+  </a>
 
-            <div className="space-y-2 text-white/60">
-              <p>Next.js</p>
-              <p>Supabase</p>
-              <p>Stripe</p>
-              <p>Cloudflare R2</p>
-            </div>
-          </div>
+  <p>Privacy Policy</p>
+  <p>Terms of Service</p>
+</div>
+</div>
+
+<div>
+  <h4 className="text-xl font-bold mb-6">
+    Technologies
+  </h4>
+
+  <div className="space-y-2 text-white/60">
+    <p>Next.js</p>
+    <p>Supabase</p>
+    <p>Stripe</p>
+    <p>Cloudflare R2</p>
+  </div>
+</div>
 
           <div>
             <h4 className="text-xl font-bold mb-6">
@@ -550,7 +625,7 @@ photos.
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between text-white/40 text-sm">
-          <p>© 2026 EventFrame</p>
+          <p>© 2026 FrameEvent</p>
           <p>Created by Krzysztof Pazdalski</p>
         </div>
       </footer>

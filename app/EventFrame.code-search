@@ -1,0 +1,44 @@
+# Query: EventFrame
+# Flags: CaseSensitive
+# ContextLines: 1
+
+8 results - 7 files
+
+app/layout.tsx:
+  15  export const metadata: Metadata = {
+  16:   title: "EventFrame",
+  17    description:
+
+app/page.tsx:
+  68    <h1 className="text-3xl font-semibold tracking-tight">
+  69:     EventFrame
+  70    </h1>
+
+app/admin/page.tsx:
+  297        <h1 className="text-5xl font-bold mb-10">
+  298:         EventFrame Admin
+  299        </h1>
+
+app/api/create-checkout-session/route.ts:
+  46          product_data: {
+  47:           name: `EventFrame Photo #${item.photoId}`,
+  48            description: `Event ID: ${item.eventId}`,
+
+  59            product_data: {
+  60:             name: `EventFrame Photo #${photoId}`,
+  61              description: `Event ID: ${eventId}`,
+
+app/api/get-downloads/route.ts:
+  83  
+  84:   let eventTitle = 'EventFrame Gallery'
+  85  
+
+app/cancel/page.tsx:
+  17          >
+  18:           Back to EventFrame
+  19          </a>
+
+app/success/page.tsx:
+  165            >
+  166:             Back to EventFrame
+  167            </a>

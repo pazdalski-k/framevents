@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EventFrame",
+  title: "FrameEvent",
   description:
-    "Premium Event Photography Platform - Find your memories.",
+    "Premium event photography platform in Normandy. Find, buy and download your event photos.",
   icons: {
     icon: "/icon.svg",
   },
@@ -31,7 +31,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+      </body>
     </html>
   );
 }

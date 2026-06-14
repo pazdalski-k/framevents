@@ -31,7 +31,7 @@ export async function POST(request: Request) {
           currency: 'eur',
           unit_amount: Number(price) * 100,
           product_data: {
-            name: `Full Gallery Access`,
+            name: 'Full Gallery Access',
             description: eventTitle,
           },
         },
@@ -79,24 +79,20 @@ export async function POST(request: Request) {
             ? 'cart'
             : 'single_photo',
 
-        photoId: photoId
-          ? String(photoId)
-          : '',
-
-        eventId: eventId
-          ? String(eventId)
-          : '',
+        photoId: photoId ? String(photoId) : '',
+        eventId: eventId ? String(eventId) : '',
 
         items: items
           ? JSON.stringify(
-              items.map(
-                (item: any) => item.photoId
-              )
+              items.map((item: any) => ({
+                photoId: item.photoId,
+                eventId: item.eventId,
+              }))
             )
           : '',
       },
 
-      success_url: `${origin}/success`,
+      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cancel`,
     })
 
