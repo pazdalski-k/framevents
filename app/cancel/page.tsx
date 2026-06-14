@@ -15,7 +15,7 @@ export default function CancelPage() {
           href="/"
           className="inline-block border border-white/20 px-8 py-4 rounded-full font-semibold"
         >
-          Back to EventFrame
+          Back to FramEvent
         </a>
 
       </div>

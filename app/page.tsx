@@ -66,7 +66,7 @@ return (
   </span>
 
   <h1 className="text-3xl font-semibold tracking-tight">
-    FrameEvent
+    FramEvent
   </h1>
 </div>
 
@@ -427,7 +427,7 @@ photos.
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h3 className="text-4xl font-bold">
-                Your FrameEvent Account
+                Your FramEvent Account
               </h3>
 
               <p className="text-white/60 text-xl mt-6 leading-relaxed">
@@ -509,7 +509,7 @@ photos.
     </p>
 
     <h2 className="text-6xl font-bold mt-4">
-      Work with FrameEvent
+      Work with FramEvent
     </h2>
 
     <p className="text-white/60 text-xl mt-6 max-w-3xl leading-relaxed">
@@ -529,10 +529,10 @@ photos.
           <p>📍 Normandy, France</p>
 
           <a
-            href="mailto:contact@frameevents.fr"
+            href="mailto:contact@framevents.fr"
             className="block hover:text-white transition"
           >
-            ✉️ contact@frameevents.fr
+            ✉️ contact@framevents.fr
           </a>
 
           <a
@@ -553,7 +553,7 @@ photos.
         </p>
 
         <a
-          href="mailto:contact@frameevents.fr"
+          href="mailto:contact@framevents.fr"
           className="inline-block mt-8 bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition"
         >
           Send email
@@ -567,7 +567,7 @@ photos.
         <div className="grid md:grid-cols-3 gap-16">
           <div>
             <h3 className="text-3xl font-bold mb-6">
-              FRAMEEVENT
+              FRAMEVENT
             </h3>
 
             <p className="text-white/60 leading-relaxed">
@@ -576,7 +576,7 @@ photos.
 
             <div className="mt-8 space-y-2 text-white/60">
   <a
-    href="mailto:contact@frameevents.fr"
+    href="mailto:contact@framevents.fr"
     className="block hover:text-white transition"
   >
     Contact
@@ -625,7 +625,7 @@ photos.
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between text-white/40 text-sm">
-          <p>© 2026 FrameEvent</p>
+          <p>© 2026 FramEvent</p>
           <p>Created by Krzysztof Pazdalski</p>
         </div>
       </footer>

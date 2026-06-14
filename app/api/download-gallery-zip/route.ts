@@ -111,7 +111,7 @@ export async function GET(request: Request) {
     event?.title
       ?.replace(/[^a-z0-9]/gi, '-')
       .replace(/-+/g, '-')
-      .toLowerCase() || 'frameevent-gallery'
+      .toLowerCase() || 'framevent-gallery'
 
   return new Response(zipBuffer, {
     headers: {
