@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
 
@@ -22,7 +22,7 @@ export default function SuccessPage() {
 
   useEffect(() => {
     const processOrder = async () => {
-      localStorage.removeItem('eventframe_cart')
+      localStorage.removeItem('framevent_cart')
 
       if (!sessionId) {
         setStatus(
@@ -99,7 +99,6 @@ export default function SuccessPage() {
   return (
     <main className="min-h-screen bg-black text-white px-8 py-20">
       <div className="max-w-6xl mx-auto">
-
         <h1 className="text-6xl font-bold mb-8 text-center">
           Payment Successful 🎉
         </h1>
@@ -110,7 +109,6 @@ export default function SuccessPage() {
 
         {purchaseType === 'gallery' && (
           <div className="text-center mb-16">
-
             <a
               href={`/api/download-gallery-zip?sessionId=${sessionId}`}
               className="inline-block bg-green-600 hover:bg-green-500 px-10 py-5 rounded-2xl text-xl font-bold"
@@ -123,13 +121,11 @@ export default function SuccessPage() {
                 {eventTitle}
               </p>
             )}
-
           </div>
         )}
 
         {downloads.length > 0 && (
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-
             {downloads.map((photo) => (
               <div
                 key={photo.id}
@@ -142,7 +138,6 @@ export default function SuccessPage() {
                 />
 
                 <div className="p-4">
-
                   <a
                     href={photo.downloadUrl}
                     download
@@ -150,11 +145,9 @@ export default function SuccessPage() {
                   >
                     Download HD
                   </a>
-
                 </div>
               </div>
             ))}
-
           </div>
         )}
 
@@ -163,11 +156,26 @@ export default function SuccessPage() {
             href="/"
             className="inline-block bg-white text-black px-8 py-4 rounded-full font-semibold"
           >
-            Back to FrameEvent
+            Back to FramEvent
           </a>
         </div>
-
       </div>
     </main>
+  )
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-black text-white px-8 py-20">
+          <p className="text-center text-white/70 text-xl">
+            Loading order...
+          </p>
+        </main>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   )
 }
