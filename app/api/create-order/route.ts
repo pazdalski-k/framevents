@@ -1,15 +1,28 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
 
 const stripe = new Stripe(
   process.env.STRIPE_SECRET_KEY as string
 )
 
+const resend = new Resend(process.env.RESEND_API_KEY)
+
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
   process.env.SUPABASE_SERVICE_ROLE_KEY as string
 )
+
+function getSiteUrl(request: Request) {
+  const origin = request.headers.get('origin')
+
+  if (origin) {
+    return origin
+  }
+
+  return 'http://localhost:3000'
+}
 
 export async function POST(request: Request) {
   const body = await request.json()
@@ -22,6 +35,8 @@ export async function POST(request: Request) {
     )
   }
 
+  const siteUrl = getSiteUrl(request)
+
   const session =
     await stripe.checkout.sessions.retrieve(sessionId)
 
@@ -33,7 +48,6 @@ export async function POST(request: Request) {
   }
 
   const metadata = session.metadata || {}
-
   const purchaseType = metadata.type || 'unknown'
 
   const eventId = metadata.eventId
@@ -87,6 +101,77 @@ export async function POST(request: Request) {
       { error: error.message },
       { status: 500 }
     )
+  }
+
+  let eventTitle = 'FramEvent Gallery'
+
+  if (eventId) {
+    const { data: event } = await supabaseAdmin
+      .from('events')
+      .select('title')
+      .eq('id', eventId)
+      .single()
+
+    if (event?.title) {
+      eventTitle = event.title
+    }
+  }
+
+  if (customerEmail) {
+    const downloadPageUrl =
+      `${siteUrl}/success?session_id=${session.id}`
+
+    await resend.emails.send({
+      from: 'FramEvent <onboarding@resend.dev>',
+      to: customerEmail,
+      subject: 'FramEvent – Your photos are ready / Vos photos sont prêtes',
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111;">
+          <h2>FramEvent</h2>
+
+          <p><strong>🇫🇷 Français</strong></p>
+          <p>
+            Merci pour votre achat.
+          </p>
+          <p>
+            Votre commande pour <strong>${eventTitle}</strong> est prête.
+          </p>
+          <p>
+            Vous pouvez télécharger vos photos ici :
+          </p>
+          <p>
+            <a href="${downloadPageUrl}" style="display:inline-block;background:#000;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;">
+              Télécharger mes photos
+            </a>
+          </p>
+
+          <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;" />
+
+          <p><strong>🇬🇧 English</strong></p>
+          <p>
+            Thank you for your purchase.
+          </p>
+          <p>
+            Your order for <strong>${eventTitle}</strong> is ready.
+          </p>
+          <p>
+            You can download your photos here:
+          </p>
+          <p>
+            <a href="${downloadPageUrl}" style="display:inline-block;background:#000;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;">
+              Download my photos
+            </a>
+          </p>
+
+          <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;" />
+
+          <p style="font-size:14px;color:#555;">
+            FramEvent<br />
+            Krzysztof Pazdalski
+          </p>
+        </div>
+      `,
+    })
   }
 
   return NextResponse.json({

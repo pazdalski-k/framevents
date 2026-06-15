@@ -202,11 +202,27 @@ photos.
             >
               <div className="relative overflow-hidden">
 
-                <img
-                  src={event.image_url}
-                  alt={event.title}
-                  className="w-full h-[600px] object-cover transition duration-700 group-hover:scale-110"
-                />
+                {event.image_url ? (
+  <img
+    src={event.image_url}
+    alt={event.title}
+    className="w-full h-[600px] object-cover transition duration-700 group-hover:scale-110"
+  />
+) : (
+  <div className="w-full h-[600px] bg-[radial-gradient(circle_at_top,#27272a,transparent_45%),linear-gradient(135deg,#111111,#000000)] flex items-center justify-center">
+    <div className="text-center px-8">
+      <p className="text-white/40 uppercase tracking-[5px] text-xs mb-4">
+        Gallery pending
+      </p>
+      <p className="text-3xl font-bold text-white">
+        Photos available soon
+      </p>
+      <p className="text-white/50 mt-4">
+        24–48h after the event
+      </p>
+    </div>
+  </div>
+)}
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
