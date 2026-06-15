@@ -39,7 +39,7 @@ async function createWatermarkedPreview(file: File) {
 
       for (let x = -canvas.width; x < canvas.width * 2; x += 520) {
         for (let y = -canvas.height; y < canvas.height * 2; y += 280) {
-          ctx.fillText('FRAMEVENT', x, y)
+          ctx.fillText('FramEvent', x, y)
         }
       }
 
@@ -65,10 +65,7 @@ async function createWatermarkedPreview(file: File) {
 }
 
 function getEventUrl(eventId: number) {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
+  if (typeof window === 'undefined') return ''
   return `${window.location.origin}/event/${eventId}`
 }
 
@@ -89,6 +86,7 @@ export default function AdminPage() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [images, setImages] = useState<FileList | null>(null)
   const [events, setEvents] = useState<any[]>([])
+  const [notifyingId, setNotifyingId] = useState<number | null>(null)
 
   useEffect(() => {
     loadEvents()
@@ -300,6 +298,11 @@ export default function AdminPage() {
         .eq('event_id', id)
     }
 
+    await supabase
+      .from('event_notifications')
+      .delete()
+      .eq('event_id', id)
+
     const { error } = await supabase
       .from('events')
       .delete()
@@ -308,6 +311,36 @@ export default function AdminPage() {
     console.log('DELETE ERROR:', error)
 
     loadEvents()
+  }
+
+  const notifySubscribers = async (eventId: number) => {
+    const confirmed = confirm(
+      'Wysłać email do wszystkich zapisanych osób dla tego wydarzenia?'
+    )
+
+    if (!confirmed) return
+
+    setNotifyingId(eventId)
+
+    const response = await fetch('/api/notify-subscribers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        eventId,
+      }),
+    })
+
+    const data = await response.json()
+
+    setNotifyingId(null)
+
+    if (data.success) {
+      alert(`Emails sent: ${data.sent}`)
+    } else {
+      alert(data.error || 'Notification error')
+    }
   }
 
   return (
@@ -368,7 +401,7 @@ export default function AdminPage() {
           </p>
 
           <p className="text-white/40 text-sm mb-4">
-            You can create an event without photos. Visitors will see a 24–48h availability message and can leave their email.
+            You can create an event without photos. Visitors will see a 24–48h message and can leave their email.
           </p>
 
           <input
@@ -446,6 +479,16 @@ export default function AdminPage() {
                 >
                   QR Code
                 </a>
+
+                <button
+                  onClick={() => notifySubscribers(event.id)}
+                  disabled={notifyingId === event.id}
+                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 transition"
+                >
+                  {notifyingId === event.id
+                    ? 'Sending...'
+                    : 'Notify Subscribers'}
+                </button>
 
                 <button
                   onClick={() => {
