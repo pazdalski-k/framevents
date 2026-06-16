@@ -103,14 +103,41 @@ export default function AdminPage() {
   }, [])
 
   const loadEvents = async () => {
-    const { data } = await supabase
+    const { data: eventsData, error: eventsError } = await supabase
       .from('events')
       .select('*')
       .order('date', { ascending: false })
 
-    if (data) {
-      setEvents(data)
+    if (eventsError) {
+      console.log('EVENTS LOAD ERROR:', eventsError)
+      return
     }
+
+    const { data: notificationsData, error: notificationsError } =
+      await supabase
+        .from('event_notifications')
+        .select('event_id')
+
+    if (notificationsError) {
+      console.log('NOTIFICATIONS LOAD ERROR:', notificationsError)
+    }
+
+    const signupCounts = (notificationsData || []).reduce<
+      Record<number, number>
+    >((acc, item) => {
+      if (item.event_id) {
+        acc[item.event_id] = (acc[item.event_id] || 0) + 1
+      }
+
+      return acc
+    }, {})
+
+    const eventsWithSignups = (eventsData || []).map((event) => ({
+      ...event,
+      email_signups: signupCounts[event.id] || 0,
+    }))
+
+    setEvents(eventsWithSignups)
   }
 
   const resetForm = () => {
@@ -390,19 +417,19 @@ export default function AdminPage() {
   }
 
   return (
-  <main className="bg-black text-white min-h-screen p-10">
-    <div className="flex items-center justify-between mb-10">
-      <h1 className="text-5xl font-bold">
-        FramEvent Admin
-      </h1>
+    <main className="bg-black text-white min-h-screen p-10">
+      <div className="flex items-center justify-between mb-10">
+        <h1 className="text-5xl font-bold">
+          FramEvent Admin
+        </h1>
 
-      <button
-        onClick={logout}
-        className="px-5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-white transition"
-      >
-        Logout
-      </button>
-    </div>
+        <button
+          onClick={logout}
+          className="px-5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-white transition"
+        >
+          Logout
+        </button>
+      </div>
 
       <form
         className="max-w-4xl space-y-6"
@@ -544,6 +571,10 @@ export default function AdminPage() {
                   }`}
                 >
                   {event.is_published ? 'Published' : 'Hidden'}
+                </p>
+
+                <p className="text-cyan-400 text-sm mt-2">
+                  Email signups: {event.email_signups || 0}
                 </p>
 
                 {(event.photos_count || 0) === 0 && (
