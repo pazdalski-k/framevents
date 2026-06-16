@@ -619,6 +619,13 @@ export default function AdminPage() {
                   QR Code
                 </a>
 
+                <Link
+                  href={`/admin/signups/${event.id}`}
+                  className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white transition"
+                >
+                  View Signups
+                </Link>
+
                 <button
                   onClick={() => notifySubscribers(event.id)}
                   disabled={notifyingId === event.id}
