@@ -83,6 +83,8 @@ export default function AdminPage() {
   const [location, setLocation] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
+  const [photoPrice, setPhotoPrice] = useState('1')
+  const [galleryPrice, setGalleryPrice] = useState('10')
   const [editingId, setEditingId] = useState<number | null>(null)
   const [images, setImages] = useState<FileList | null>(null)
   const [events, setEvents] = useState<any[]>([])
@@ -103,9 +105,34 @@ export default function AdminPage() {
     }
   }
 
+  const resetForm = () => {
+    setEditingId(null)
+    setTitle('')
+    setDate('')
+    setLocation('')
+    setDescription('')
+    setCategory('')
+    setPhotoPrice('1')
+    setGalleryPrice('10')
+    setImages(null)
+  }
+
   const createEvent = async () => {
     if (!title || !date || !location) {
       alert('Wpisz tytuł, datę i lokalizację wydarzenia')
+      return
+    }
+
+    const parsedPhotoPrice = Number(photoPrice)
+    const parsedGalleryPrice = Number(galleryPrice)
+
+    if (
+      Number.isNaN(parsedPhotoPrice) ||
+      parsedPhotoPrice <= 0 ||
+      Number.isNaN(parsedGalleryPrice) ||
+      parsedGalleryPrice <= 0
+    ) {
+      alert('Wpisz poprawne ceny, np. 1 lub 2.99')
       return
     }
 
@@ -132,7 +159,7 @@ export default function AdminPage() {
       imageUrl = data.publicUrl
     }
 
-    let newEvent
+    let newEvent: any = null
 
     if (editingId) {
       const updateData: any = {
@@ -141,6 +168,8 @@ export default function AdminPage() {
         location,
         description,
         category,
+        photo_price: parsedPhotoPrice,
+        gallery_price: parsedGalleryPrice,
       }
 
       if (imageUrl) {
@@ -154,12 +183,12 @@ export default function AdminPage() {
         .select()
         .single()
 
-      newEvent = updatedEvent
-
       if (error) {
         alert(JSON.stringify(error))
         return
       }
+
+      newEvent = updatedEvent
     } else {
       const { data: createdEvent, error } = await supabase
         .from('events')
@@ -172,64 +201,62 @@ export default function AdminPage() {
             category,
             image_url: imageUrl || '',
             photos_count: 0,
+            photo_price: parsedPhotoPrice,
+            gallery_price: parsedGalleryPrice,
           },
         ])
         .select()
         .single()
 
-      newEvent = createdEvent
-
       if (error) {
         alert(JSON.stringify(error))
         return
       }
+
+      newEvent = createdEvent
     }
 
-    if (images && images.length > 0) {
+    if (images && images.length > 0 && newEvent) {
       for (const file of Array.from(images)) {
         const timestamp = Date.now()
 
-        const previewFileName = `${timestamp}-preview-${file.name}.jpg`
-        const hdFileName = `${timestamp}-hd-${file.name}`
+        const previewFileName = `${newEvent.id}/${timestamp}-preview-${file.name}.jpg`
+        const hdFileName = `${newEvent.id}/${timestamp}-hd-${file.name}`
 
         const previewBlob = await createWatermarkedPreview(file)
 
-        const { error: previewUploadError } =
-          await supabase.storage
-            .from('event-photos-preview')
-            .upload(previewFileName, previewBlob)
+        const { error: previewUploadError } = await supabase.storage
+          .from('event-photos-preview')
+          .upload(previewFileName, previewBlob)
 
         if (previewUploadError) {
           console.log('PREVIEW UPLOAD ERROR:', previewUploadError)
           continue
         }
 
-        const { error: hdUploadError } =
-          await supabase.storage
-            .from('event-photos-hd')
-            .upload(hdFileName, file)
+        const { error: hdUploadError } = await supabase.storage
+          .from('event-photos-hd')
+          .upload(hdFileName, file)
 
         if (hdUploadError) {
           console.log('HD UPLOAD ERROR:', hdUploadError)
           continue
         }
 
-        const { data: previewData } =
-          supabase.storage
-            .from('event-photos-preview')
-            .getPublicUrl(previewFileName)
+        const { data: previewData } = supabase.storage
+          .from('event-photos-preview')
+          .getPublicUrl(previewFileName)
 
-        const { error: photoInsertError } =
-          await supabase
-            .from('photos')
-            .insert([
-              {
-                event_id: newEvent.id,
-                image_url: previewData.publicUrl,
-                file_name: previewFileName,
-                hd_file_name: hdFileName,
-              },
-            ])
+        const { error: photoInsertError } = await supabase
+          .from('photos')
+          .insert([
+            {
+              event_id: newEvent.id,
+              image_url: previewData.publicUrl,
+              file_name: previewFileName,
+              hd_file_name: hdFileName,
+            },
+          ])
 
         console.log('PHOTO INSERT ERROR:', photoInsertError)
       }
@@ -248,21 +275,12 @@ export default function AdminPage() {
     }
 
     alert(editingId ? 'Event updated!' : 'Event created!')
-    loadEvents()
-
-    setEditingId(null)
-    setTitle('')
-    setDate('')
-    setLocation('')
-    setDescription('')
-    setCategory('')
-    setImages(null)
+    await loadEvents()
+    resetForm()
   }
 
   const deleteEvent = async (id: number) => {
-    const confirmed = confirm(
-      'Czy na pewno usunąć wydarzenie?'
-    )
+    const confirmed = confirm('Czy na pewno usunąć wydarzenie?')
 
     if (!confirmed) return
 
@@ -310,7 +328,7 @@ export default function AdminPage() {
 
     console.log('DELETE ERROR:', error)
 
-    loadEvents()
+    await loadEvents()
   }
 
   const notifySubscribers = async (eventId: number) => {
@@ -395,6 +413,28 @@ export default function AdminPage() {
           className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
         />
 
+        <div className="grid md:grid-cols-2 gap-4">
+          <input
+            type="number"
+            step="0.01"
+            min="0.5"
+            placeholder="Photo Price (€)"
+            value={photoPrice}
+            onChange={(e) => setPhotoPrice(e.target.value)}
+            className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
+          />
+
+          <input
+            type="number"
+            step="0.01"
+            min="0.5"
+            placeholder="Gallery Price (€)"
+            value={galleryPrice}
+            onChange={(e) => setGalleryPrice(e.target.value)}
+            className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
+          />
+        </div>
+
         <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-5">
           <p className="text-white/70 mb-3">
             Cover photo / event photos — optional
@@ -413,12 +453,24 @@ export default function AdminPage() {
           />
         </div>
 
-        <button
-          type="submit"
-          className="px-10 py-5 bg-white text-black rounded-2xl font-bold text-lg hover:scale-105 transition"
-        >
-          {editingId ? 'Update Event' : 'Create Event'}
-        </button>
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            className="px-10 py-5 bg-white text-black rounded-2xl font-bold text-lg hover:scale-105 transition"
+          >
+            {editingId ? 'Update Event' : 'Create Event'}
+          </button>
+
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="px-10 py-5 bg-zinc-700 text-white rounded-2xl font-bold text-lg hover:bg-zinc-600 transition"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
       </form>
 
       <div className="mt-20">
@@ -445,6 +497,10 @@ export default function AdminPage() {
                   {event.photos_count || 0} photos
                 </p>
 
+                <p className="text-white/40 text-sm mt-2">
+                  Photo: {event.photo_price || 0}€ · Gallery: {event.gallery_price || 0}€
+                </p>
+
                 {(event.photos_count || 0) === 0 && (
                   <p className="text-yellow-400 text-sm mt-2">
                     Waiting page active: 24–48h message + email notification form
@@ -462,6 +518,13 @@ export default function AdminPage() {
                   className="px-4 py-2 rounded-xl bg-white text-black hover:bg-zinc-200 transition"
                 >
                   View
+                </Link>
+
+                <Link
+                  href={`/admin/upload/${event.id}`}
+                  className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition"
+                >
+                  Upload
                 </Link>
 
                 <Link
@@ -493,11 +556,13 @@ export default function AdminPage() {
                 <button
                   onClick={() => {
                     setEditingId(event.id)
-                    setTitle(event.title)
-                    setDate(event.date)
-                    setLocation(event.location)
-                    setDescription(event.description)
-                    setCategory(event.category)
+                    setTitle(event.title || '')
+                    setDate(event.date || '')
+                    setLocation(event.location || '')
+                    setDescription(event.description || '')
+                    setCategory(event.category || '')
+                    setPhotoPrice(String(event.photo_price || 1))
+                    setGalleryPrice(String(event.gallery_price || 10))
                   }}
                   className="px-4 py-2 rounded-xl bg-zinc-700 hover:bg-zinc-600 transition"
                 >

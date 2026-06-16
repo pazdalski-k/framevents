@@ -8,6 +8,7 @@ type Photo = {
   image_url: string
   event_id: number
   file_name: string
+  hd_file_name?: string
 }
 
 export default function AdminPhotos({
@@ -31,8 +32,6 @@ export default function AdminPhotos({
       })
       .eq('id', photo.event_id)
 
-    console.log('SET COVER ERROR:', error)
-
     if (error) {
       alert(JSON.stringify(error))
       return
@@ -48,15 +47,15 @@ export default function AdminPhotos({
     if (!confirmed) return
 
     if (photo.file_name) {
-      const { error: storageError } =
-        await supabase.storage
-          .from('event-photos')
-          .remove([photo.file_name])
+      await supabase.storage
+        .from('event-photos-preview')
+        .remove([photo.file_name])
+    }
 
-      console.log(
-        'STORAGE DELETE ERROR:',
-        storageError
-      )
+    if (photo.hd_file_name) {
+      await supabase.storage
+        .from('event-photos-hd')
+        .remove([photo.hd_file_name])
     }
 
     const { error } = await supabase
@@ -64,14 +63,28 @@ export default function AdminPhotos({
       .delete()
       .eq('id', photo.id)
 
-    console.log('DELETE ERROR:', error)
-
     if (error) {
       alert(JSON.stringify(error))
       return
     }
 
+    const { count } = await supabase
+      .from('photos')
+      .select('*', {
+        count: 'exact',
+        head: true,
+      })
+      .eq('event_id', photo.event_id)
+
+    await supabase
+      .from('events')
+      .update({
+        photos_count: count || 0,
+      })
+      .eq('id', photo.event_id)
+
     alert('Zdjęcie usunięte')
+
     router.refresh()
   }
 
