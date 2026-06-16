@@ -90,6 +90,14 @@ export default function AdminPage() {
   const [events, setEvents] = useState<any[]>([])
   const [notifyingId, setNotifyingId] = useState<number | null>(null)
 
+  const logout = async () => {
+    await fetch('/api/admin-logout', {
+      method: 'POST',
+    })
+
+    window.location.href = '/admin/login'
+  }
+
   useEffect(() => {
     loadEvents()
   }, [])
@@ -382,10 +390,19 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="bg-black text-white min-h-screen p-10">
-      <h1 className="text-5xl font-bold mb-10">
+  <main className="bg-black text-white min-h-screen p-10">
+    <div className="flex items-center justify-between mb-10">
+      <h1 className="text-5xl font-bold">
         FramEvent Admin
       </h1>
+
+      <button
+        onClick={logout}
+        className="px-5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-white transition"
+      >
+        Logout
+      </button>
+    </div>
 
       <form
         className="max-w-4xl space-y-6"
