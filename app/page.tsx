@@ -13,9 +13,10 @@ export default async function Home({
   const search = params?.q?.toLowerCase() || ''
 
   const { data, error } = await supabase
-    .from('events')
-    .select('*')
-    .order('date', { ascending: true })
+  .from('events')
+  .select('*')
+  .eq('is_published', true)
+  .order('date', { ascending: true })
 
   if (error) {
     console.log('EVENTS LOAD ERROR:', error)

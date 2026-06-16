@@ -203,6 +203,7 @@ export default function AdminPage() {
             photos_count: 0,
             photo_price: parsedPhotoPrice,
             gallery_price: parsedGalleryPrice,
+            is_published: true,
           },
         ])
         .select()
@@ -327,6 +328,25 @@ export default function AdminPage() {
       .eq('id', id)
 
     console.log('DELETE ERROR:', error)
+
+    await loadEvents()
+  }
+
+  const togglePublish = async (
+    eventId: number,
+    currentStatus: boolean
+  ) => {
+    const { error } = await supabase
+      .from('events')
+      .update({
+        is_published: !currentStatus,
+      })
+      .eq('id', eventId)
+
+    if (error) {
+      alert(JSON.stringify(error))
+      return
+    }
 
     await loadEvents()
   }
@@ -501,6 +521,14 @@ export default function AdminPage() {
                   Photo: {event.photo_price || 0}€ · Gallery: {event.gallery_price || 0}€
                 </p>
 
+                <p
+                  className={`text-sm mt-2 ${
+                    event.is_published ? 'text-green-400' : 'text-red-400'
+                  }`}
+                >
+                  {event.is_published ? 'Published' : 'Hidden'}
+                </p>
+
                 {(event.photos_count || 0) === 0 && (
                   <p className="text-yellow-400 text-sm mt-2">
                     Waiting page active: 24–48h message + email notification form
@@ -551,6 +579,22 @@ export default function AdminPage() {
                   {notifyingId === event.id
                     ? 'Sending...'
                     : 'Notify Subscribers'}
+                </button>
+
+                <button
+                  onClick={() =>
+                    togglePublish(
+                      event.id,
+                      event.is_published ?? true
+                    )
+                  }
+                  className={`px-4 py-2 rounded-xl transition ${
+                    event.is_published
+                      ? 'bg-yellow-600 hover:bg-yellow-700'
+                      : 'bg-green-600 hover:bg-green-700'
+                  }`}
+                >
+                  {event.is_published ? 'Hide' : 'Publish'}
                 </button>
 
                 <button
