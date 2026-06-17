@@ -10,6 +10,66 @@ type UploadStatus = {
   message?: string
 }
 
+async function createWatermarkedPreview(file: File) {
+  return new Promise<Blob>((resolve, reject) => {
+    const img = new Image()
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      img.src = reader.result as string
+    }
+
+    img.onload = () => {
+      const maxWidth = 1600
+      const scale = Math.min(1, maxWidth / img.width)
+
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width * scale
+      canvas.height = img.height * scale
+
+      const ctx = canvas.getContext('2d')
+
+      if (!ctx) {
+        reject('Canvas error')
+        return
+      }
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+      ctx.save()
+      ctx.globalAlpha = 0.22
+      ctx.fillStyle = 'white'
+      ctx.font = 'bold 70px Arial'
+      ctx.textAlign = 'center'
+      ctx.rotate((-25 * Math.PI) / 180)
+
+      for (let x = -canvas.width; x < canvas.width * 2; x += 520) {
+        for (let y = -canvas.height; y < canvas.height * 2; y += 280) {
+          ctx.fillText('FramEvent', x, y)
+        }
+      }
+
+      ctx.restore()
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject('Preview error')
+            return
+          }
+
+          resolve(blob)
+        },
+        'image/jpeg',
+        0.82
+      )
+    }
+
+    img.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function AdminUploadPhotos({
   eventId,
 }: {
@@ -29,26 +89,25 @@ export default function AdminUploadPhotos({
   }
 
   const updatePhotoCount = async () => {
-    const { data: photos, error: countError } = await supabase
+    const { count, error } = await supabase
       .from('photos')
-      .select('id')
+      .select('*', {
+        count: 'exact',
+        head: true,
+      })
       .eq('event_id', eventId)
 
-    if (countError) {
-      console.log('PHOTO COUNT ERROR:', countError)
+    if (error) {
+      console.log('PHOTO COUNT ERROR:', error)
       return
     }
 
-    const count = photos?.length || 0
-
-    const { error: updateError } = await supabase
+    await supabase
       .from('events')
-      .update({ photos_count: count })
+      .update({
+        photos_count: count || 0,
+      })
       .eq('id', eventId)
-
-    if (updateError) {
-      console.log('EVENT COUNT UPDATE ERROR:', updateError)
-    }
   }
 
   const uploadPhotos = async () => {
@@ -76,14 +135,22 @@ export default function AdminUploadPhotos({
       )
 
       const cleanName = safeFileName(file.name)
-      const uniqueName = `${eventId}/${Date.now()}-${crypto.randomUUID()}-${cleanName}`
+      const timestamp = Date.now()
 
-      const previewFileName = uniqueName
-      const hdFileName = uniqueName
+      const previewFileName =
+        `${eventId}/${timestamp}-preview-${crypto.randomUUID()}-${cleanName}.jpg`
+
+      const hdFileName =
+        `${eventId}/${timestamp}-hd-${crypto.randomUUID()}-${cleanName}`
+
+      const previewBlob = await createWatermarkedPreview(file)
 
       const { error: previewError } = await supabase.storage
         .from('event-photos-preview')
-        .upload(previewFileName, file)
+        .upload(previewFileName, previewBlob, {
+          contentType: 'image/jpeg',
+          upsert: false,
+        })
 
       if (previewError) {
         console.log('PREVIEW UPLOAD ERROR:', previewError)
@@ -105,7 +172,9 @@ export default function AdminUploadPhotos({
 
       const { error: hdError } = await supabase.storage
         .from('event-photos-hd')
-        .upload(hdFileName, file)
+        .upload(hdFileName, file, {
+          upsert: false,
+        })
 
       if (hdError) {
         console.log('HD UPLOAD ERROR:', hdError)

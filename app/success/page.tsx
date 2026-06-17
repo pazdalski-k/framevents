@@ -3,6 +3,12 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
+type DownloadPhoto = {
+  id: number
+  previewUrl: string
+  downloadUrl: string
+}
+
 function SuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
@@ -12,7 +18,7 @@ function SuccessContent() {
   )
 
   const [downloads, setDownloads] =
-    useState<any[]>([])
+    useState<DownloadPhoto[]>([])
 
   const [purchaseType, setPurchaseType] =
     useState('')
@@ -22,74 +28,80 @@ function SuccessContent() {
 
   useEffect(() => {
     const processOrder = async () => {
-      localStorage.removeItem('framevent_cart')
+      try {
+        localStorage.removeItem('framevent_cart')
+        localStorage.removeItem('eventframe_cart')
 
-      if (!sessionId) {
-        setStatus(
-          'Payment completed, but no session ID was found.'
-        )
-        return
-      }
-
-      const orderResponse = await fetch(
-        '/api/create-order',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            sessionId,
-          }),
+        if (!sessionId) {
+          setStatus(
+            'Payment completed, but no session ID was found.'
+          )
+          return
         }
-      )
 
-      const orderData =
-        await orderResponse.json()
-
-      if (!orderData.success) {
-        setStatus(
-          orderData.error ||
-            'Could not save your order.'
+        const orderResponse = await fetch(
+          '/api/create-order',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sessionId,
+            }),
+          }
         )
-        return
-      }
 
-      const downloadResponse = await fetch(
-        '/api/get-downloads',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            sessionId,
-          }),
+        const orderData =
+          await orderResponse.json()
+
+        if (!orderData.success) {
+          setStatus(
+            orderData.error ||
+              'Could not save your order.'
+          )
+          return
         }
-      )
 
-      const downloadData =
-        await downloadResponse.json()
-
-      if (downloadData.success) {
-        setDownloads(
-          downloadData.downloads || []
+        const downloadResponse = await fetch(
+          '/api/get-downloads',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sessionId,
+            }),
+          }
         )
 
-        setPurchaseType(
-          downloadData.purchaseType || ''
-        )
+        const downloadData =
+          await downloadResponse.json()
 
-        setEventTitle(
-          downloadData.eventTitle || ''
-        )
+        if (downloadData.success) {
+          setDownloads(
+            downloadData.downloads || []
+          )
 
-        setStatus('Your purchase is ready.')
-      } else {
-        setStatus(
-          downloadData.error ||
-            'Could not load downloads.'
-        )
+          setPurchaseType(
+            downloadData.purchaseType || ''
+          )
+
+          setEventTitle(
+            downloadData.eventTitle || ''
+          )
+
+          setStatus('Your purchase is ready.')
+        } else {
+          setStatus(
+            downloadData.error ||
+              'Could not load downloads.'
+          )
+        }
+      } catch (error) {
+        console.error('Success page error:', error)
+        setStatus('Something went wrong while loading your order.')
       }
     }
 

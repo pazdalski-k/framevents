@@ -177,6 +177,19 @@ export default function Gallery({
                 className="w-full aspect-[4/3] object-cover rounded-2xl hover:scale-[1.02] transition duration-300 cursor-pointer select-none"
               />
 
+              <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 group-hover:opacity-100 transition">
+                <div className="bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  {photoPrice}€
+                </div>
+
+                <button
+                  onClick={() => setSelectedImage(index)}
+                  className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition"
+                >
+                  Buy Photo
+                </button>
+              </div>
+
               {isInCart && (
                 <button
                   onClick={() => removeFromCart(photo.id)}
@@ -213,7 +226,7 @@ export default function Gallery({
               }}
               className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition"
             >
-              Buy Now {photoPrice}€
+              Buy Photo {photoPrice}€
             </button>
           </div>
 
@@ -270,7 +283,7 @@ export default function Gallery({
 
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <p className="text-white/20 text-7xl font-bold rotate-[-25deg] tracking-widest">
-                EVENTFRAME
+                FramEvent
               </p>
             </div>
           </div>

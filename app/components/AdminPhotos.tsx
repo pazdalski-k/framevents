@@ -7,8 +7,8 @@ type Photo = {
   id: number
   image_url: string
   event_id: number
-  file_name: string
-  hd_file_name?: string
+  file_name: string | null
+  hd_file_name?: string | null
 }
 
 export default function AdminPhotos({
@@ -29,6 +29,7 @@ export default function AdminPhotos({
       .from('events')
       .update({
         image_url: photo.image_url,
+        cover_image: photo.image_url,
       })
       .eq('id', photo.event_id)
 
@@ -41,21 +42,92 @@ export default function AdminPhotos({
     router.refresh()
   }
 
+  const updateEventAfterDelete = async (
+    deletedPhoto: Photo
+  ) => {
+    const { data: event } = await supabase
+      .from('events')
+      .select('id, image_url, cover_image')
+      .eq('id', deletedPhoto.event_id)
+      .single()
+
+    const { data: remainingPhotos } = await supabase
+      .from('photos')
+      .select('*')
+      .eq('event_id', deletedPhoto.event_id)
+      .order('id', { ascending: true })
+
+    const newCount = remainingPhotos?.length || 0
+
+    const wasCover =
+      event?.image_url === deletedPhoto.image_url ||
+      event?.cover_image === deletedPhoto.image_url
+
+    const updateData: {
+      photos_count: number
+      image_url?: string
+      cover_image?: string
+    } = {
+      photos_count: newCount,
+    }
+
+    if (wasCover) {
+      const nextPhoto = remainingPhotos?.[0]
+
+      updateData.image_url = nextPhoto?.image_url || ''
+      updateData.cover_image = nextPhoto?.image_url || ''
+    }
+
+    const { error } = await supabase
+      .from('events')
+      .update(updateData)
+      .eq('id', deletedPhoto.event_id)
+
+    if (error) {
+      alert(JSON.stringify(error))
+    }
+  }
+
   const deletePhoto = async (photo: Photo) => {
     const confirmed = confirm('Usunąć zdjęcie?')
 
     if (!confirmed) return
 
     if (photo.file_name) {
-      await supabase.storage
-        .from('event-photos-preview')
-        .remove([photo.file_name])
+      const { error: previewDeleteError } =
+        await supabase.storage
+          .from('event-photos-preview')
+          .remove([photo.file_name])
+
+      console.log(
+        'PREVIEW DELETE ERROR:',
+        previewDeleteError
+      )
+
+      if (previewDeleteError) {
+        alert(
+          'Błąd usuwania preview: ' +
+            JSON.stringify(previewDeleteError)
+        )
+        return
+      }
     }
 
     if (photo.hd_file_name) {
-      await supabase.storage
-        .from('event-photos-hd')
-        .remove([photo.hd_file_name])
+      const { error: hdDeleteError } =
+        await supabase.storage
+          .from('event-photos-hd')
+          .remove([photo.hd_file_name])
+
+      console.log('HD DELETE ERROR:', hdDeleteError)
+
+      if (hdDeleteError) {
+        alert(
+          'Błąd usuwania HD: ' +
+            JSON.stringify(hdDeleteError)
+        )
+        return
+      }
     }
 
     const { error } = await supabase
@@ -68,23 +140,9 @@ export default function AdminPhotos({
       return
     }
 
-    const { count } = await supabase
-      .from('photos')
-      .select('*', {
-        count: 'exact',
-        head: true,
-      })
-      .eq('event_id', photo.event_id)
-
-    await supabase
-      .from('events')
-      .update({
-        photos_count: count || 0,
-      })
-      .eq('id', photo.event_id)
+    await updateEventAfterDelete(photo)
 
     alert('Zdjęcie usunięte')
-
     router.refresh()
   }
 
@@ -104,6 +162,14 @@ export default function AdminPhotos({
           <div className="p-4">
             <p className="text-sm text-white/50">
               ID: {photo.id}
+            </p>
+
+            <p className="text-xs text-white/30 mt-1 break-all">
+              Preview: {photo.file_name || 'brak'}
+            </p>
+
+            <p className="text-xs text-white/30 mt-1 break-all">
+              HD: {photo.hd_file_name || 'brak'}
             </p>
 
             <button

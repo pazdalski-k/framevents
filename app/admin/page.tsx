@@ -64,6 +64,10 @@ async function createWatermarkedPreview(file: File) {
   })
 }
 
+function getTodayDate() {
+  return new Date().toISOString().split('T')[0]
+}
+
 function getEventUrl(eventId: number) {
   if (typeof window === 'undefined') return ''
   return `${window.location.origin}/event/${eventId}`
@@ -75,6 +79,13 @@ function getQrUrl(eventId: number) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=800x800&data=${encodeURIComponent(
     eventUrl
   )}`
+}
+
+function safeFileName(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9.-]/g, '')
 }
 
 export default function AdminPage() {
@@ -89,6 +100,10 @@ export default function AdminPage() {
   const [images, setImages] = useState<FileList | null>(null)
   const [events, setEvents] = useState<any[]>([])
   const [notifyingId, setNotifyingId] = useState<number | null>(null)
+
+  const [quickTitle, setQuickTitle] = useState('')
+  const [quickEvent, setQuickEvent] = useState<any | null>(null)
+  const [creatingQuickEvent, setCreatingQuickEvent] = useState(false)
 
   const logout = async () => {
     await fetch('/api/admin-logout', {
@@ -140,6 +155,47 @@ export default function AdminPage() {
     setEvents(eventsWithSignups)
   }
 
+  const createQuickEvent = async () => {
+    if (!quickTitle.trim()) {
+      alert('Wpisz nazwę eventu / grupy')
+      return
+    }
+
+    setCreatingQuickEvent(true)
+
+    const { data, error } = await supabase
+      .from('events')
+      .insert([
+        {
+          title: quickTitle.trim(),
+          date: getTodayDate(),
+          location: 'Caen',
+          description:
+            'Photos will be available soon. Please come back later using this QR code.',
+          category: 'Quick Event',
+          image_url: '',
+          cover_image: '',
+          photos_count: 0,
+          photo_price: 1,
+          gallery_price: 10,
+          is_published: true,
+        },
+      ])
+      .select()
+      .single()
+
+    setCreatingQuickEvent(false)
+
+    if (error) {
+      alert(JSON.stringify(error))
+      return
+    }
+
+    setQuickEvent(data)
+    setQuickTitle('')
+    await loadEvents()
+  }
+
   const resetForm = () => {
     setEditingId(null)
     setTitle('')
@@ -150,6 +206,86 @@ export default function AdminPage() {
     setPhotoPrice('1')
     setGalleryPrice('10')
     setImages(null)
+  }
+
+  const uploadEventPhotos = async (eventId: number) => {
+    if (!images || images.length === 0) {
+      return {
+        count: 0,
+        firstPreviewUrl: '',
+      }
+    }
+
+    let firstPreviewUrl = ''
+    let uploadedCount = 0
+
+    for (const file of Array.from(images)) {
+      const timestamp = Date.now()
+      const cleanName = safeFileName(file.name)
+
+      const previewFileName =
+        `${eventId}/${timestamp}-preview-${crypto.randomUUID()}-${cleanName}.jpg`
+
+      const hdFileName =
+        `${eventId}/${timestamp}-hd-${crypto.randomUUID()}-${cleanName}`
+
+      const previewBlob = await createWatermarkedPreview(file)
+
+      const { error: previewUploadError } = await supabase.storage
+        .from('event-photos-preview')
+        .upload(previewFileName, previewBlob, {
+          contentType: 'image/jpeg',
+          upsert: false,
+        })
+
+      if (previewUploadError) {
+        console.log('PREVIEW UPLOAD ERROR:', previewUploadError)
+        continue
+      }
+
+      const { error: hdUploadError } = await supabase.storage
+        .from('event-photos-hd')
+        .upload(hdFileName, file, {
+          upsert: false,
+        })
+
+      if (hdUploadError) {
+        console.log('HD UPLOAD ERROR:', hdUploadError)
+        continue
+      }
+
+      const { data: previewData } = supabase.storage
+        .from('event-photos-preview')
+        .getPublicUrl(previewFileName)
+
+      const previewUrl = previewData.publicUrl
+
+      if (!firstPreviewUrl) {
+        firstPreviewUrl = previewUrl
+      }
+
+      const { error: photoInsertError } = await supabase
+        .from('photos')
+        .insert([
+          {
+            event_id: eventId,
+            image_url: previewUrl,
+            file_name: previewFileName,
+            hd_file_name: hdFileName,
+          },
+        ])
+
+      console.log('PHOTO INSERT ERROR:', photoInsertError)
+
+      if (!photoInsertError) {
+        uploadedCount += 1
+      }
+    }
+
+    return {
+      count: uploadedCount,
+      firstPreviewUrl,
+    }
   }
 
   const createEvent = async () => {
@@ -171,49 +307,20 @@ export default function AdminPage() {
       return
     }
 
-    let imageUrl = ''
-
-    if (images && images.length > 0) {
-      const image = images[0]
-      const previewBlob = await createWatermarkedPreview(image)
-      const coverFileName = `${Date.now()}-cover-${image.name}.jpg`
-
-      const { error: uploadError } = await supabase.storage
-        .from('event-photos-preview')
-        .upload(coverFileName, previewBlob)
-
-      if (uploadError) {
-        alert(JSON.stringify(uploadError))
-        return
-      }
-
-      const { data } = supabase.storage
-        .from('event-photos-preview')
-        .getPublicUrl(coverFileName)
-
-      imageUrl = data.publicUrl
-    }
-
     let newEvent: any = null
 
     if (editingId) {
-      const updateData: any = {
-        title,
-        date,
-        location,
-        description,
-        category,
-        photo_price: parsedPhotoPrice,
-        gallery_price: parsedGalleryPrice,
-      }
-
-      if (imageUrl) {
-        updateData.image_url = imageUrl
-      }
-
       const { data: updatedEvent, error } = await supabase
         .from('events')
-        .update(updateData)
+        .update({
+          title,
+          date,
+          location,
+          description,
+          category,
+          photo_price: parsedPhotoPrice,
+          gallery_price: parsedGalleryPrice,
+        })
         .eq('id', editingId)
         .select()
         .single()
@@ -234,7 +341,8 @@ export default function AdminPage() {
             location,
             description,
             category,
-            image_url: imageUrl || '',
+            image_url: '',
+            cover_image: '',
             photos_count: 0,
             photo_price: parsedPhotoPrice,
             gallery_price: parsedGalleryPrice,
@@ -253,60 +361,28 @@ export default function AdminPage() {
     }
 
     if (images && images.length > 0 && newEvent) {
-      for (const file of Array.from(images)) {
-        const timestamp = Date.now()
-
-        const previewFileName = `${newEvent.id}/${timestamp}-preview-${file.name}.jpg`
-        const hdFileName = `${newEvent.id}/${timestamp}-hd-${file.name}`
-
-        const previewBlob = await createWatermarkedPreview(file)
-
-        const { error: previewUploadError } = await supabase.storage
-          .from('event-photos-preview')
-          .upload(previewFileName, previewBlob)
-
-        if (previewUploadError) {
-          console.log('PREVIEW UPLOAD ERROR:', previewUploadError)
-          continue
-        }
-
-        const { error: hdUploadError } = await supabase.storage
-          .from('event-photos-hd')
-          .upload(hdFileName, file)
-
-        if (hdUploadError) {
-          console.log('HD UPLOAD ERROR:', hdUploadError)
-          continue
-        }
-
-        const { data: previewData } = supabase.storage
-          .from('event-photos-preview')
-          .getPublicUrl(previewFileName)
-
-        const { error: photoInsertError } = await supabase
-          .from('photos')
-          .insert([
-            {
-              event_id: newEvent.id,
-              image_url: previewData.publicUrl,
-              file_name: previewFileName,
-              hd_file_name: hdFileName,
-            },
-          ])
-
-        console.log('PHOTO INSERT ERROR:', photoInsertError)
-      }
+      const uploadResult = await uploadEventPhotos(newEvent.id)
 
       const { count } = await supabase
         .from('photos')
-        .select('*', { count: 'exact', head: true })
+        .select('*', {
+          count: 'exact',
+          head: true,
+        })
         .eq('event_id', newEvent.id)
+
+      const updateData: any = {
+        photos_count: count || 0,
+      }
+
+      if (uploadResult.firstPreviewUrl) {
+        updateData.image_url = uploadResult.firstPreviewUrl
+        updateData.cover_image = uploadResult.firstPreviewUrl
+      }
 
       await supabase
         .from('events')
-        .update({
-          photos_count: count || 0,
-        })
+        .update(updateData)
         .eq('id', newEvent.id)
     }
 
@@ -429,6 +505,85 @@ export default function AdminPage() {
         >
           Logout
         </button>
+      </div>
+
+      <div className="max-w-4xl mb-14 rounded-[32px] border border-white/10 bg-[#111111] p-6 md:p-8">
+        <p className="uppercase tracking-[5px] text-white/40 text-xs mb-3">
+          Quick Event
+        </p>
+
+        <h2 className="text-3xl font-bold mb-4">
+          Create event in the field
+        </h2>
+
+        <p className="text-white/50 mb-6">
+          Use this on your phone during live events. Enter the group name, create the gallery link, show the QR code, and upload photos later.
+        </p>
+
+        <div className="flex flex-col md:flex-row gap-3">
+          <input
+            type="text"
+            placeholder="Group / school / artist name"
+            value={quickTitle}
+            onChange={(e) => setQuickTitle(e.target.value)}
+            className="flex-1 p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
+          />
+
+          <button
+            type="button"
+            onClick={createQuickEvent}
+            disabled={creatingQuickEvent}
+            className="px-8 py-5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-2xl font-bold text-lg transition"
+          >
+            {creatingQuickEvent ? 'Creating...' : '⚡ Quick Event'}
+          </button>
+        </div>
+
+        {quickEvent && (
+          <div className="mt-8 rounded-3xl bg-black/50 border border-white/10 p-6">
+            <p className="text-green-400 font-semibold mb-3">
+              Quick Event created
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              {quickEvent.title}
+            </h3>
+
+            <p className="text-white/50 break-all mb-4">
+              {getEventUrl(quickEvent.id)}
+            </p>
+
+            <div className="flex flex-wrap gap-3 mb-6">
+              <button
+                type="button"
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    getEventUrl(quickEvent.id)
+                  )
+                }
+                className="px-5 py-3 rounded-xl bg-white text-black font-semibold"
+              >
+                Copy Link
+              </button>
+
+              <Link
+                href={`/event/${quickEvent.id}`}
+                target="_blank"
+                className="px-5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10"
+              >
+                Open Gallery
+              </Link>
+            </div>
+
+            <div className="bg-white p-4 rounded-2xl inline-block">
+              <img
+                src={getQrUrl(quickEvent.id)}
+                alt="QR Code"
+                className="w-56 h-56"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <form

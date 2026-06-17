@@ -5,98 +5,118 @@ const stripe = new Stripe(
   process.env.STRIPE_SECRET_KEY as string
 )
 
+type CartItem = {
+  photoId: number
+  eventId: number
+  price: number
+}
+
 export async function POST(request: Request) {
-  const body = await request.json()
+  try {
+    const body = await request.json()
 
-  const origin =
-    request.headers.get('origin') ||
-    'http://localhost:3000'
+    const origin =
+      request.headers.get('origin') ||
+      'http://localhost:3000'
 
-  const {
-    photoId,
-    eventId,
-    eventTitle,
-    price,
-    items,
-    type,
-  } = body
+    const {
+      photoId,
+      eventId,
+      eventTitle,
+      price,
+      items,
+      type,
+    } = body
 
-  let lineItems
+    let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = []
 
-  if (type === 'gallery') {
-    lineItems = [
-      {
+    if (type === 'gallery') {
+      lineItems = [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'eur',
+            unit_amount: Math.round(Number(price) * 100),
+            product_data: {
+              name: 'FramEvent Full Gallery Access',
+              description: eventTitle || 'Full event gallery access',
+            },
+          },
+        },
+      ]
+    } else if (Array.isArray(items) && items.length > 0) {
+      lineItems = items.map((item: CartItem) => ({
         quantity: 1,
         price_data: {
           currency: 'eur',
-          unit_amount: Number(price) * 100,
+          unit_amount: Math.round(Number(item.price) * 100),
           product_data: {
-            name: 'Full Gallery Access',
-            description: eventTitle,
+            name: `FramEvent Photo #${item.photoId}`,
+            description: `Event ID: ${item.eventId}`,
           },
         },
-      },
-    ]
-  } else if (items) {
-    lineItems = items.map((item: any) => ({
-      quantity: 1,
-      price_data: {
-        currency: 'eur',
-        unit_amount: Number(item.price) * 100,
-        product_data: {
-          name: `EventFrame Photo #${item.photoId}`,
-          description: `Event ID: ${item.eventId}`,
-        },
-      },
-    }))
-  } else {
-    lineItems = [
-      {
-        quantity: 1,
-        price_data: {
-          currency: 'eur',
-          unit_amount: Number(price) * 100,
-          product_data: {
-            name: `EventFrame Photo #${photoId}`,
-            description: `Event ID: ${eventId}`,
+      }))
+    } else {
+      lineItems = [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'eur',
+            unit_amount: Math.round(Number(price) * 100),
+            product_data: {
+              name: `FramEvent Photo #${photoId}`,
+              description: `Event ID: ${eventId}`,
+            },
           },
         },
-      },
-    ]
-  }
+      ]
+    }
 
-  const session =
-    await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: lineItems,
+    const session =
+      await stripe.checkout.sessions.create({
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: lineItems,
 
-      metadata: {
-        type:
-          type === 'gallery'
-            ? 'gallery'
-            : items
-            ? 'cart'
-            : 'single_photo',
+        metadata: {
+          type:
+            type === 'gallery'
+              ? 'gallery'
+              : Array.isArray(items) && items.length > 0
+              ? 'cart'
+              : 'single_photo',
 
-        photoId: photoId ? String(photoId) : '',
-        eventId: eventId ? String(eventId) : '',
+          photoId: photoId ? String(photoId) : '',
+          eventId: eventId ? String(eventId) : '',
 
-        items: items
-          ? JSON.stringify(
-              items.map((item: any) => ({
-                photoId: item.photoId,
-                eventId: item.eventId,
-              }))
-            )
-          : '',
-      },
+          items:
+            Array.isArray(items) && items.length > 0
+              ? JSON.stringify(
+                  items.map((item: CartItem) => ({
+                    photoId: item.photoId,
+                    eventId: item.eventId,
+                  }))
+                )
+              : '',
+        },
 
-      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/cancel`,
+        success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/cancel`,
+      })
+
+    return NextResponse.json({
+      url: session.url,
     })
+  } catch (error) {
+    console.error('Stripe checkout error:', error)
 
-  return NextResponse.json({
-    url: session.url,
-  })
+    return NextResponse.json(
+      {
+        error: 'Unable to create checkout session',
+      },
+      {
+        status: 500,
+      }
+    )
+  }
 }
