@@ -13,10 +13,10 @@ export default async function Home({
   const search = params?.q?.toLowerCase() || ''
 
   const { data, error } = await supabase
-  .from('events')
-  .select('*')
-  .eq('is_published', true)
-  .order('date', { ascending: true })
+    .from('events')
+    .select('*')
+    .eq('is_published', true)
+    .order('date', { ascending: true })
 
   if (error) {
     console.log('EVENTS LOAD ERROR:', error)
@@ -307,7 +307,7 @@ export default async function Home({
             <div className="flex justify-center">
               <div className="bg-white p-6 rounded-[32px]">
                 <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://www.framevents.fr"
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://www.framevent.fr"
                   alt="QR Code"
                   className="w-[260px] h-[260px]"
                 />
@@ -512,10 +512,10 @@ export default async function Home({
                 <p>📍 Normandy, France</p>
 
                 <a
-                  href="mailto:contact@framevents.fr"
+                  href="mailto:contact@framevent.fr"
                   className="block hover:text-white transition"
                 >
-                  ✉️ contact@framevents.fr
+                  ✉️ contact@framevent.fr
                 </a>
 
                 <a
@@ -536,7 +536,7 @@ export default async function Home({
               </p>
 
               <a
-                href="mailto:contact@framevents.fr"
+                href="mailto:contact@framevent.fr"
                 className="inline-block mt-8 bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition"
               >
                 Send email
@@ -550,7 +550,7 @@ export default async function Home({
         <div className="grid md:grid-cols-3 gap-16">
           <div>
             <h3 className="text-3xl font-bold mb-6">
-              FRAMEVENT
+              FramEvent
             </h3>
 
             <p className="text-white/60 leading-relaxed">
@@ -559,7 +559,7 @@ export default async function Home({
 
             <div className="mt-8 space-y-2 text-white/60">
               <a
-                href="mailto:contact@framevents.fr"
+                href="mailto:contact@framevent.fr"
                 className="block hover:text-white transition"
               >
                 Contact
@@ -574,8 +574,19 @@ export default async function Home({
                 Instagram
               </a>
 
-              <p>Privacy Policy</p>
-              <p>Terms of Service</p>
+              <Link
+                href="/privacy"
+                className="block hover:text-white transition"
+              >
+                Privacy Policy
+              </Link>
+
+              <Link
+                href="/terms"
+                className="block hover:text-white transition"
+              >
+                Terms & Conditions
+              </Link>
             </div>
           </div>
 
@@ -588,7 +599,7 @@ export default async function Home({
               <p>Next.js</p>
               <p>Supabase</p>
               <p>Stripe</p>
-              <p>Cloudflare R2</p>
+              <p>Vercel</p>
             </div>
           </div>
 
@@ -600,9 +611,9 @@ export default async function Home({
             <div className="space-y-2 text-white/60">
               <p>Visa</p>
               <p>Mastercard</p>
-              <p>PayPal</p>
               <p>Apple Pay</p>
               <p>Google Pay</p>
+              <p>PayPal soon</p>
             </div>
           </div>
         </div>
