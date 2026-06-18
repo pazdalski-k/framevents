@@ -39,7 +39,8 @@ export async function POST(request: Request) {
             unit_amount: Math.round(Number(price) * 100),
             product_data: {
               name: 'FramEvent Full Gallery Access',
-              description: eventTitle || 'Full event gallery access',
+              description:
+                eventTitle || 'Full event gallery access',
             },
           },
         },
@@ -75,7 +76,13 @@ export async function POST(request: Request) {
     const session =
       await stripe.checkout.sessions.create({
         mode: 'payment',
-        payment_method_types: ['card'],
+
+        payment_method_types: [
+          'card',
+          'paypal',
+          'revolut_pay',
+        ],
+
         line_items: lineItems,
 
         metadata: {
@@ -108,7 +115,10 @@ export async function POST(request: Request) {
       url: session.url,
     })
   } catch (error) {
-    console.error('Stripe checkout error:', error)
+    console.error(
+      'Stripe checkout error:',
+      JSON.stringify(error, null, 2)
+    )
 
     return NextResponse.json(
       {

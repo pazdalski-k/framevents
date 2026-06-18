@@ -1,8 +1,25 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase'
+
+type EventItem = {
+  id: number
+  title: string
+  date: string
+  location: string
+  description: string | null
+  category: string | null
+  image_url: string | null
+  cover_image: string | null
+  photos_count: number | null
+  photo_price: number | null
+  gallery_price: number | null
+  is_published: boolean | null
+  email_signups?: number
+}
 
 async function createWatermarkedPreview(file: File) {
   return new Promise<Blob>((resolve, reject) => {
@@ -24,7 +41,7 @@ async function createWatermarkedPreview(file: File) {
       const ctx = canvas.getContext('2d')
 
       if (!ctx) {
-        reject('Canvas error')
+        reject('Erreur canvas')
         return
       }
 
@@ -48,7 +65,7 @@ async function createWatermarkedPreview(file: File) {
       canvas.toBlob(
         (blob) => {
           if (!blob) {
-            reject('Preview error')
+            reject('Erreur de création du preview')
             return
           }
 
@@ -64,148 +81,102 @@ async function createWatermarkedPreview(file: File) {
   })
 }
 
-function getTodayDate() {
-  return new Date().toISOString().split('T')[0]
-}
-
-function getEventUrl(eventId: number) {
-  if (typeof window === 'undefined') return ''
-  return `${window.location.origin}/event/${eventId}`
-}
-
-function getQrUrl(eventId: number) {
-  const eventUrl = getEventUrl(eventId)
-
-  return `https://api.qrserver.com/v1/create-qr-code/?size=800x800&data=${encodeURIComponent(
-    eventUrl
-  )}`
-}
-
-function safeFileName(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9.-]/g, '')
-}
-
 export default function AdminPage() {
+  const router = useRouter()
+
+  const [events, setEvents] = useState<EventItem[]>([])
   const [title, setTitle] = useState('')
   const [date, setDate] = useState('')
   const [location, setLocation] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
-  const [photoPrice, setPhotoPrice] = useState('1')
+  const [photoPrice, setPhotoPrice] = useState('0.5')
   const [galleryPrice, setGalleryPrice] = useState('10')
-  const [editingId, setEditingId] = useState<number | null>(null)
   const [images, setImages] = useState<FileList | null>(null)
-  const [events, setEvents] = useState<any[]>([])
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [quickTitle, setQuickTitle] = useState('')
+  const [quickEvent, setQuickEvent] = useState<EventItem | null>(null)
+  const [creatingQuickEvent, setCreatingQuickEvent] = useState(false)
   const [notifyingId, setNotifyingId] = useState<number | null>(null)
 
-  const [quickTitle, setQuickTitle] = useState('')
-  const [quickEvent, setQuickEvent] = useState<any | null>(null)
-  const [creatingQuickEvent, setCreatingQuickEvent] = useState(false)
+  useEffect(() => {
+    loadEvents()
+  }, [])
+
+  const getBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+      return window.location.origin
+    }
+
+    return 'https://framevent.fr'
+  }
+
+  const getEventUrl = (eventId: number) => {
+    return `${getBaseUrl()}/event/${eventId}`
+  }
+
+  const getQrUrl = (eventId: number) => {
+    return `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(
+      getEventUrl(eventId)
+    )}`
+  }
+
+  const safeFileName = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9.-]/g, '')
+  }
+
+  const loadEvents = async () => {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .order('date', { ascending: false })
+
+    if (error) {
+      console.log('EVENTS LOAD ERROR:', error)
+      return
+    }
+
+    const eventsWithSignups = await Promise.all(
+      (data || []).map(async (event) => {
+        const { count } = await supabase
+          .from('event_notifications')
+          .select('*', {
+            count: 'exact',
+            head: true,
+          })
+          .eq('event_id', event.id)
+
+        return {
+          ...event,
+          email_signups: count || 0,
+        }
+      })
+    )
+
+    setEvents(eventsWithSignups)
+  }
 
   const logout = async () => {
     await fetch('/api/admin-logout', {
       method: 'POST',
     })
 
-    window.location.href = '/admin/login'
-  }
-
-  useEffect(() => {
-    loadEvents()
-  }, [])
-
-  const loadEvents = async () => {
-    const { data: eventsData, error: eventsError } = await supabase
-      .from('events')
-      .select('*')
-      .order('date', { ascending: false })
-
-    if (eventsError) {
-      console.log('EVENTS LOAD ERROR:', eventsError)
-      return
-    }
-
-    const { data: notificationsData, error: notificationsError } =
-      await supabase
-        .from('event_notifications')
-        .select('event_id')
-
-    if (notificationsError) {
-      console.log('NOTIFICATIONS LOAD ERROR:', notificationsError)
-    }
-
-    const signupCounts = (notificationsData || []).reduce<
-      Record<number, number>
-    >((acc, item) => {
-      if (item.event_id) {
-        acc[item.event_id] = (acc[item.event_id] || 0) + 1
-      }
-
-      return acc
-    }, {})
-
-    const eventsWithSignups = (eventsData || []).map((event) => ({
-      ...event,
-      email_signups: signupCounts[event.id] || 0,
-    }))
-
-    setEvents(eventsWithSignups)
-  }
-
-  const createQuickEvent = async () => {
-    if (!quickTitle.trim()) {
-      alert('Wpisz nazwę eventu / grupy')
-      return
-    }
-
-    setCreatingQuickEvent(true)
-
-    const { data, error } = await supabase
-      .from('events')
-      .insert([
-        {
-          title: quickTitle.trim(),
-          date: getTodayDate(),
-          location: 'Caen',
-          description:
-            'Photos will be available soon. Please come back later using this QR code.',
-          category: 'Quick Event',
-          image_url: '',
-          cover_image: '',
-          photos_count: 0,
-          photo_price: 1,
-          gallery_price: 10,
-          is_published: true,
-        },
-      ])
-      .select()
-      .single()
-
-    setCreatingQuickEvent(false)
-
-    if (error) {
-      alert(JSON.stringify(error))
-      return
-    }
-
-    setQuickEvent(data)
-    setQuickTitle('')
-    await loadEvents()
+    router.push('/admin/login')
   }
 
   const resetForm = () => {
-    setEditingId(null)
     setTitle('')
     setDate('')
     setLocation('')
     setDescription('')
     setCategory('')
-    setPhotoPrice('1')
+    setPhotoPrice('0.5')
     setGalleryPrice('10')
     setImages(null)
+    setEditingId(null)
   }
 
   const uploadEventPhotos = async (eventId: number) => {
@@ -216,12 +187,12 @@ export default function AdminPage() {
       }
     }
 
-    let firstPreviewUrl = ''
     let uploadedCount = 0
+    let firstPreviewUrl = ''
 
     for (const file of Array.from(images)) {
-      const timestamp = Date.now()
       const cleanName = safeFileName(file.name)
+      const timestamp = Date.now()
 
       const previewFileName =
         `${eventId}/${timestamp}-preview-${crypto.randomUUID()}-${cleanName}.jpg`
@@ -275,11 +246,12 @@ export default function AdminPage() {
           },
         ])
 
-      console.log('PHOTO INSERT ERROR:', photoInsertError)
-
-      if (!photoInsertError) {
-        uploadedCount += 1
+      if (photoInsertError) {
+        console.log('PHOTO INSERT ERROR:', photoInsertError)
+        continue
       }
+
+      uploadedCount += 1
     }
 
     return {
@@ -288,9 +260,56 @@ export default function AdminPage() {
     }
   }
 
+  const createQuickEvent = async () => {
+    if (!quickTitle.trim()) {
+      alert("Entrez le nom de l'événement ou du groupe")
+      return
+    }
+
+    setCreatingQuickEvent(true)
+
+    const today = new Date().toISOString().split('T')[0]
+
+    const { data, error } = await supabase
+      .from('events')
+      .insert([
+        {
+          title: quickTitle.trim(),
+          date: today,
+          location: 'À préciser',
+          description:
+            'Les photos seront bientôt disponibles. Revenez plus tard en utilisant ce code QR.',
+          category: 'Événement rapide',
+          image_url: '',
+          cover_image: '',
+          photos_count: 0,
+          photo_price: 0.5,
+          gallery_price: 10,
+          is_published: true,
+        },
+      ])
+      .select()
+      .single()
+
+    setCreatingQuickEvent(false)
+
+    if (error) {
+      alert(JSON.stringify(error))
+      return
+    }
+
+    setQuickEvent({
+      ...data,
+      email_signups: 0,
+    })
+
+    setQuickTitle('')
+    await loadEvents()
+  }
+
   const createEvent = async () => {
     if (!title || !date || !location) {
-      alert('Wpisz tytuł, datę i lokalizację wydarzenia')
+      alert("Veuillez saisir le titre, la date et le lieu de l'événement")
       return
     }
 
@@ -303,11 +322,11 @@ export default function AdminPage() {
       Number.isNaN(parsedGalleryPrice) ||
       parsedGalleryPrice <= 0
     ) {
-      alert('Wpisz poprawne ceny, np. 1 lub 2.99')
+      alert('Veuillez saisir un prix valide, par exemple 1 ou 2.99')
       return
     }
 
-    let newEvent: any = null
+    let newEvent: EventItem | null = null
 
     if (editingId) {
       const { data: updatedEvent, error } = await supabase
@@ -371,7 +390,11 @@ export default function AdminPage() {
         })
         .eq('event_id', newEvent.id)
 
-      const updateData: any = {
+      const updateData: {
+        photos_count: number
+        image_url?: string
+        cover_image?: string
+      } = {
         photos_count: count || 0,
       }
 
@@ -386,13 +409,20 @@ export default function AdminPage() {
         .eq('id', newEvent.id)
     }
 
-    alert(editingId ? 'Event updated!' : 'Event created!')
+    alert(
+      editingId
+        ? 'Événement mis à jour'
+        : 'Événement créé'
+    )
+
     await loadEvents()
     resetForm()
   }
 
   const deleteEvent = async (id: number) => {
-    const confirmed = confirm('Czy na pewno usunąć wydarzenie?')
+    const confirmed = confirm(
+      'Êtes-vous sûr de vouloir supprimer cet événement ?'
+    )
 
     if (!confirmed) return
 
@@ -438,7 +468,10 @@ export default function AdminPage() {
       .delete()
       .eq('id', id)
 
-    console.log('DELETE ERROR:', error)
+    if (error) {
+      alert(JSON.stringify(error))
+      return
+    }
 
     await loadEvents()
   }
@@ -464,7 +497,7 @@ export default function AdminPage() {
 
   const notifySubscribers = async (eventId: number) => {
     const confirmed = confirm(
-      'Wysłać email do wszystkich zapisanych osób dla tego wydarzenia?'
+      'Envoyer un e-mail à toutes les personnes inscrites à cet événement ?'
     )
 
     if (!confirmed) return
@@ -486,9 +519,9 @@ export default function AdminPage() {
     setNotifyingId(null)
 
     if (data.success) {
-      alert(`Emails sent: ${data.sent}`)
+      alert(`E-mails envoyés : ${data.sent}`)
     } else {
-      alert(data.error || 'Notification error')
+      alert(data.error || "Erreur d'envoi des notifications")
     }
   }
 
@@ -496,34 +529,34 @@ export default function AdminPage() {
     <main className="bg-black text-white min-h-screen p-10">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-5xl font-bold">
-          FramEvent Admin
+          Administration FramEvent
         </h1>
 
         <button
           onClick={logout}
           className="px-5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-white transition"
         >
-          Logout
+          Déconnexion
         </button>
       </div>
 
       <div className="max-w-4xl mb-14 rounded-[32px] border border-white/10 bg-[#111111] p-6 md:p-8">
         <p className="uppercase tracking-[5px] text-white/40 text-xs mb-3">
-          Quick Event
+          Événement rapide
         </p>
 
         <h2 className="text-3xl font-bold mb-4">
-          Create event in the field
+          Créer un événement sur place
         </h2>
 
         <p className="text-white/50 mb-6">
-          Use this on your phone during live events. Enter the group name, create the gallery link, show the QR code, and upload photos later.
+          Utilisez cette option depuis votre téléphone pendant un événement. Entrez le nom du groupe, créez le lien de galerie, affichez le code QR et ajoutez les photos plus tard.
         </p>
 
         <div className="flex flex-col md:flex-row gap-3">
           <input
             type="text"
-            placeholder="Group / school / artist name"
+            placeholder="Nom du groupe / école / artiste"
             value={quickTitle}
             onChange={(e) => setQuickTitle(e.target.value)}
             className="flex-1 p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
@@ -535,14 +568,16 @@ export default function AdminPage() {
             disabled={creatingQuickEvent}
             className="px-8 py-5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-2xl font-bold text-lg transition"
           >
-            {creatingQuickEvent ? 'Creating...' : '⚡ Quick Event'}
+            {creatingQuickEvent
+              ? 'Création...'
+              : '⚡ Événement rapide'}
           </button>
         </div>
 
         {quickEvent && (
           <div className="mt-8 rounded-3xl bg-black/50 border border-white/10 p-6">
             <p className="text-green-400 font-semibold mb-3">
-              Quick Event created
+              Événement rapide créé
             </p>
 
             <h3 className="text-2xl font-bold mb-4">
@@ -563,7 +598,7 @@ export default function AdminPage() {
                 }
                 className="px-5 py-3 rounded-xl bg-white text-black font-semibold"
               >
-                Copy Link
+                Copier le lien
               </button>
 
               <Link
@@ -571,14 +606,14 @@ export default function AdminPage() {
                 target="_blank"
                 className="px-5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10"
               >
-                Open Gallery
+                Ouvrir la galerie
               </Link>
             </div>
 
             <div className="bg-white p-4 rounded-2xl inline-block">
               <img
                 src={getQrUrl(quickEvent.id)}
-                alt="QR Code"
+                alt="Code QR"
                 className="w-56 h-56"
               />
             </div>
@@ -595,7 +630,7 @@ export default function AdminPage() {
       >
         <input
           type="text"
-          placeholder="Event title"
+          placeholder="Titre de l’événement"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
@@ -610,7 +645,7 @@ export default function AdminPage() {
 
         <input
           type="text"
-          placeholder="Location"
+          placeholder="Lieu"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
@@ -626,7 +661,7 @@ export default function AdminPage() {
 
         <input
           type="text"
-          placeholder="Category"
+          placeholder="Catégorie"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
@@ -637,7 +672,7 @@ export default function AdminPage() {
             type="number"
             step="0.01"
             min="0.5"
-            placeholder="Photo Price (€)"
+            placeholder="Prix photo (€)"
             value={photoPrice}
             onChange={(e) => setPhotoPrice(e.target.value)}
             className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
@@ -647,7 +682,7 @@ export default function AdminPage() {
             type="number"
             step="0.01"
             min="0.5"
-            placeholder="Gallery Price (€)"
+            placeholder="Prix galerie (€)"
             value={galleryPrice}
             onChange={(e) => setGalleryPrice(e.target.value)}
             className="w-full p-5 rounded-2xl bg-zinc-800 border border-zinc-700 text-white text-lg"
@@ -656,11 +691,11 @@ export default function AdminPage() {
 
         <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-5">
           <p className="text-white/70 mb-3">
-            Cover photo / event photos — optional
+            Photo de couverture / photos de l’événement — optionnel
           </p>
 
           <p className="text-white/40 text-sm mb-4">
-            You can create an event without photos. Visitors will see a 24–48h message and can leave their email.
+            Vous pouvez créer un événement sans photos. Les visiteurs verront un message 24–48h et pourront laisser leur e-mail.
           </p>
 
           <input
@@ -677,7 +712,9 @@ export default function AdminPage() {
             type="submit"
             className="px-10 py-5 bg-white text-black rounded-2xl font-bold text-lg hover:scale-105 transition"
           >
-            {editingId ? 'Update Event' : 'Create Event'}
+            {editingId
+              ? 'Mettre à jour'
+              : 'Créer l’événement'}
           </button>
 
           {editingId && (
@@ -686,7 +723,7 @@ export default function AdminPage() {
               onClick={resetForm}
               className="px-10 py-5 bg-zinc-700 text-white rounded-2xl font-bold text-lg hover:bg-zinc-600 transition"
             >
-              Cancel Edit
+              Annuler
             </button>
           )}
         </div>
@@ -694,7 +731,7 @@ export default function AdminPage() {
 
       <div className="mt-20">
         <h2 className="text-3xl font-bold mb-8">
-          Existing Events
+          Événements existants
         </h2>
 
         <div className="space-y-4">
@@ -717,7 +754,7 @@ export default function AdminPage() {
                 </p>
 
                 <p className="text-white/40 text-sm mt-2">
-                  Photo: {event.photo_price || 0}€ · Gallery: {event.gallery_price || 0}€
+                  Photo : {event.photo_price || 0}€ · Galerie : {event.gallery_price || 0}€
                 </p>
 
                 <p
@@ -725,16 +762,16 @@ export default function AdminPage() {
                     event.is_published ? 'text-green-400' : 'text-red-400'
                   }`}
                 >
-                  {event.is_published ? 'Published' : 'Hidden'}
+                  {event.is_published ? 'Publié' : 'Masqué'}
                 </p>
 
                 <p className="text-cyan-400 text-sm mt-2">
-                  Email signups: {event.email_signups || 0}
+                  Inscriptions e-mail : {event.email_signups || 0}
                 </p>
 
                 {(event.photos_count || 0) === 0 && (
                   <p className="text-yellow-400 text-sm mt-2">
-                    Waiting page active: 24–48h message + email notification form
+                    Page d’attente active : message 24–48h + formulaire e-mail
                   </p>
                 )}
 
@@ -748,14 +785,14 @@ export default function AdminPage() {
                   href={`/event/${event.id}`}
                   className="px-4 py-2 rounded-xl bg-white text-black hover:bg-zinc-200 transition"
                 >
-                  View
+                  Voir
                 </Link>
 
                 <Link
                   href={`/admin/upload/${event.id}`}
                   className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition"
                 >
-                  Upload
+                  Téléverser
                 </Link>
 
                 <Link
@@ -771,14 +808,14 @@ export default function AdminPage() {
                   rel="noopener noreferrer"
                   className="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 transition"
                 >
-                  QR Code
+                  Code QR
                 </a>
 
                 <Link
                   href={`/admin/signups/${event.id}`}
                   className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white transition"
                 >
-                  View Signups
+                  Inscriptions
                 </Link>
 
                 <button
@@ -787,8 +824,8 @@ export default function AdminPage() {
                   className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 transition"
                 >
                   {notifyingId === event.id
-                    ? 'Sending...'
-                    : 'Notify Subscribers'}
+                    ? 'Envoi...'
+                    : 'Notifier'}
                 </button>
 
                 <button
@@ -804,7 +841,7 @@ export default function AdminPage() {
                       : 'bg-green-600 hover:bg-green-700'
                   }`}
                 >
-                  {event.is_published ? 'Hide' : 'Publish'}
+                  {event.is_published ? 'Masquer' : 'Publier'}
                 </button>
 
                 <button
@@ -815,19 +852,19 @@ export default function AdminPage() {
                     setLocation(event.location || '')
                     setDescription(event.description || '')
                     setCategory(event.category || '')
-                    setPhotoPrice(String(event.photo_price || 1))
+                    setPhotoPrice(String(event.photo_price || 0.5))
                     setGalleryPrice(String(event.gallery_price || 10))
                   }}
                   className="px-4 py-2 rounded-xl bg-zinc-700 hover:bg-zinc-600 transition"
                 >
-                  Edit
+                  Modifier
                 </button>
 
                 <button
                   onClick={() => deleteEvent(event.id)}
                   className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition"
                 >
-                  Delete
+                  Supprimer
                 </button>
               </div>
             </div>
