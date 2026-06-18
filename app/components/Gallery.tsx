@@ -143,18 +143,18 @@ export default function Gallery({
         <div className="sticky top-6 z-40 mb-10 flex justify-center">
           <div className="bg-white text-black rounded-full px-6 py-4 flex items-center gap-6 shadow-2xl">
             <span className="font-semibold">
-              {cart.length} photo{cart.length > 1 ? 's' : ''} in cart
+              {cart.length} photo{cart.length > 1 ? 's' : ''} dans le panier
             </span>
 
             <span className="text-black/50">
-              Total: {total}€
+              Total : {total}€
             </span>
 
             <button
               onClick={checkoutCart}
               className="bg-black text-white px-6 py-3 rounded-full font-semibold"
             >
-              Checkout
+              Payer
             </button>
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function Gallery({
                   onClick={() => setSelectedImage(index)}
                   className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition"
                 >
-                  Buy Photo
+                  Acheter la photo
                 </button>
               </div>
 
@@ -195,7 +195,7 @@ export default function Gallery({
                   onClick={() => removeFromCart(photo.id)}
                   className="absolute top-4 right-4 bg-white text-black px-4 py-2 rounded-full text-sm font-semibold"
                 >
-                  In Cart ✓
+                  Dans le panier ✓
                 </button>
               )}
             </div>
@@ -216,7 +216,7 @@ export default function Gallery({
               }}
               className="border border-white/20 text-white px-6 py-4 rounded-full font-semibold hover:bg-white/10 transition"
             >
-              {added ? 'Added ✓' : 'Add to Cart'}
+              {added ? 'Ajouté ✓' : 'Ajouter au panier'}
             </button>
 
             <button
@@ -226,7 +226,7 @@ export default function Gallery({
               }}
               className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition"
             >
-              Buy Photo {photoPrice}€
+              Acheter la photo {photoPrice}€
             </button>
           </div>
 

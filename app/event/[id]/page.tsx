@@ -23,7 +23,7 @@ export default async function EventPage({
     .eq('event_id', Number(id))
 
   if (!event) {
-    return <div>Event not found</div>
+    return <div>Événement introuvable</div>
   }
 
   const hasPhotos = !!photos && photos.length > 0
@@ -36,7 +36,7 @@ export default async function EventPage({
           href="/"
           className="text-white/70 hover:text-white"
         >
-          ← Back to events
+          ← Retour aux événements
         </Link>
       </div>
 
@@ -55,7 +55,7 @@ export default async function EventPage({
 
         <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-8 pb-20">
           <p className="inline-block px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl text-xs uppercase tracking-widest">
-            {event.category || 'Event'}
+            {event.category || 'Événement'}
           </p>
 
           <h1 className="text-5xl md:text-7xl font-bold mt-6 tracking-tight max-w-5xl">
@@ -67,9 +67,9 @@ export default async function EventPage({
             <p>📅 {event.date}</p>
 
             {hasPhotos ? (
-              <p>📸 {photos.length} Photos</p>
+              <p>📸 {photos.length} photos</p>
             ) : (
-              <p>⏳ Gallery available within 24–48h</p>
+              <p>⏳ Galerie disponible sous 24–48h</p>
             )}
           </div>
         </div>
@@ -93,7 +93,7 @@ export default async function EventPage({
                 href="#photos"
                 className="bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition"
               >
-                View Photos
+                Voir les photos
               </a>
 
               <BuyGalleryButton
@@ -105,7 +105,7 @@ export default async function EventPage({
 
             <div id="photos" className="mt-20">
               <h2 className="text-5xl font-bold mb-12">
-                {photos.length} Photos
+                {photos.length} photos
               </h2>
 
               <Gallery

@@ -14,7 +14,7 @@ function SuccessContent() {
   const sessionId = searchParams.get('session_id')
 
   const [status, setStatus] = useState(
-    'Saving your order...'
+    'Enregistrement de votre commande...'
   )
 
   const [downloads, setDownloads] =
@@ -34,7 +34,7 @@ function SuccessContent() {
 
         if (!sessionId) {
           setStatus(
-            'Payment completed, but no session ID was found.'
+            'Paiement validé, mais aucun identifiant de session n’a été trouvé.'
           )
           return
         }
@@ -58,7 +58,7 @@ function SuccessContent() {
         if (!orderData.success) {
           setStatus(
             orderData.error ||
-              'Could not save your order.'
+              'Impossible d’enregistrer votre commande.'
           )
           return
         }
@@ -92,16 +92,18 @@ function SuccessContent() {
             downloadData.eventTitle || ''
           )
 
-          setStatus('Your purchase is ready.')
+          setStatus('Votre achat est prêt.')
         } else {
           setStatus(
             downloadData.error ||
-              'Could not load downloads.'
+              'Impossible de charger les téléchargements.'
           )
         }
       } catch (error) {
         console.error('Success page error:', error)
-        setStatus('Something went wrong while loading your order.')
+        setStatus(
+          'Une erreur est survenue pendant le chargement de votre commande.'
+        )
       }
     }
 
@@ -112,7 +114,7 @@ function SuccessContent() {
     <main className="min-h-screen bg-black text-white px-8 py-20">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-6xl font-bold mb-8 text-center">
-          Payment Successful 🎉
+          Paiement réussi 🎉
         </h1>
 
         <p className="text-center text-white/70 text-xl mb-12">
@@ -125,7 +127,7 @@ function SuccessContent() {
               href={`/api/download-gallery-zip?sessionId=${sessionId}`}
               className="inline-block bg-green-600 hover:bg-green-500 px-10 py-5 rounded-2xl text-xl font-bold"
             >
-              Download Entire Gallery ZIP
+              Télécharger toute la galerie ZIP
             </a>
 
             {eventTitle && (
@@ -155,7 +157,7 @@ function SuccessContent() {
                     download
                     className="block text-center bg-white text-black px-4 py-3 rounded-xl font-semibold"
                   >
-                    Download HD
+                    Télécharger HD
                   </a>
                 </div>
               </div>
@@ -168,7 +170,7 @@ function SuccessContent() {
             href="/"
             className="inline-block bg-white text-black px-8 py-4 rounded-full font-semibold"
           >
-            Back to FramEvent
+            Retour à FramEvent
           </a>
         </div>
       </div>
@@ -182,7 +184,7 @@ export default function SuccessPage() {
       fallback={
         <main className="min-h-screen bg-black text-white px-8 py-20">
           <p className="text-center text-white/70 text-xl">
-            Loading order...
+            Chargement de la commande...
           </p>
         </main>
       }
