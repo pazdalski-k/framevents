@@ -47,93 +47,115 @@ export default async function Home({
   return (
     <main className="bg-black text-white min-h-screen">
       <section className="relative min-h-[100svh] md:min-h-[92vh] overflow-hidden">
-  <img
-    src="/hero-framevent-2026.jpg"
-    alt="FramEvent"
-    className="absolute inset-0 w-full h-full object-cover object-[58%_35%] md:object-[72%_30%] opacity-100"
-  />
+        <img
+          src="/hero-framevent-2026.jpg"
+          alt="FramEvent"
+          className="absolute inset-0 w-full h-full object-cover object-[60%_35%] md:object-[70%_28%] opacity-100"
+        />
 
-  <div
-    className="absolute inset-0"
-    style={{
-      background:
-        'linear-gradient(90deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.38) 42%, rgba(0,0,0,0.05) 75%, rgba(0,0,0,0) 100%), linear-gradient(0deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.50) 20%, rgba(0,0,0,0.10) 48%, rgba(0,0,0,0) 75%)',
-    }}
-  />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+              linear-gradient(
+                90deg,
+                rgba(0,0,0,0.82) 0%,
+                rgba(0,0,0,0.42) 42%,
+                rgba(0,0,0,0.08) 75%,
+                rgba(0,0,0,0) 100%
+              ),
+              linear-gradient(
+                180deg,
+                rgba(0,0,0,0.45) 0%,
+                rgba(0,0,0,0.15) 10%,
+                rgba(0,0,0,0) 22%
+              ),
+              linear-gradient(
+                0deg,
+                rgba(0,0,0,1) 0%,
+                rgba(0,0,0,0.92) 10%,
+                rgba(0,0,0,0.72) 22%,
+                rgba(0,0,0,0.42) 38%,
+                rgba(0,0,0,0.16) 58%,
+                rgba(0,0,0,0) 78%
+              )
+            `,
+          }}
+        />
 
-  <div className="relative z-10 min-h-[100svh] md:min-h-[92vh] flex flex-col">
-    <nav className="flex justify-between items-start px-5 md:px-8 py-6">
-      <div>
-        <div className="flex items-center gap-3 md:gap-5">
-          <div className="relative h-10 w-10 md:h-16 md:w-16">
-            <span className="absolute left-0 top-0 h-3 w-3 md:h-5 md:w-5 border-l-2 border-t-2 border-white" />
-            <span className="absolute right-0 bottom-0 h-3 w-3 md:h-5 md:w-5 border-r-2 border-b-2 border-white" />
-            <span className="absolute left-1/2 top-1/2 h-7 w-7 md:h-11 md:w-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/95" />
-            <span className="absolute left-1/2 top-1/2 h-5 w-5 md:h-8 md:w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
+        <div className="relative z-10 min-h-[100svh] md:min-h-[92vh] flex flex-col">
+          <nav className="flex justify-between items-start px-5 md:px-8 py-6">
+            <div>
+              <div className="flex items-center gap-3 md:gap-5">
+                <div className="relative h-10 w-10 md:h-16 md:w-16">
+                  <span className="absolute left-0 top-0 h-3 w-3 md:h-5 md:w-5 border-l-2 border-t-2 border-white" />
+                  <span className="absolute right-0 bottom-0 h-3 w-3 md:h-5 md:w-5 border-r-2 border-b-2 border-white" />
+                  <span className="absolute left-1/2 top-1/2 h-7 w-7 md:h-11 md:w-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/95" />
+                  <span className="absolute left-1/2 top-1/2 h-5 w-5 md:h-8 md:w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
+                </div>
+
+                <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
+                  FramEvent
+                </h1>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3">
+                <span className="h-px w-9 md:w-14 bg-[#d6a85f]" />
+                <p className="text-[#d6a85f] text-[10px] md:text-xs uppercase tracking-[0.25em] md:tracking-[0.35em]">
+                  L’instant. L’émotion. L’image.
+                </p>
+              </div>
+            </div>
+
+            <div className="hidden md:flex gap-10 text-white/90 text-base">
+              <a href="#events" className="hover:text-white transition border-b border-[#d6a85f] pb-2">
+                Événements
+              </a>
+              <a href="#pricing" className="hover:text-white transition border-b border-[#d6a85f] pb-2">
+                Tarifs
+              </a>
+              <a href="#contact" className="hover:text-white transition border-b border-[#d6a85f] pb-2">
+                Contact
+              </a>
+            </div>
+          </nav>
+
+          <div className="flex-1 flex items-end md:items-center pb-20 md:pb-0">
+            <div className="w-full max-w-[360px] md:max-w-3xl px-5 md:px-8">
+              <h2 className="text-4xl md:text-6xl font-bold leading-[0.95] tracking-tight">
+                Vos photos.
+                <br />
+                Tout simplement.
+              </h2>
+
+              <div className="mt-5 md:mt-7 h-px w-12 md:w-14 bg-[#d6a85f]" />
+
+              <p className="mt-5 md:mt-7 text-base md:text-lg text-white/80 max-w-sm md:max-w-lg leading-relaxed">
+                Retrouvez votre galerie. Téléchargez vos images en HD.
+              </p>
+
+              <form
+                action="/"
+                className="mt-7 md:mt-10 bg-white rounded-full p-2 md:p-3 flex w-full max-w-sm md:max-w-xl shadow-2xl"
+              >
+                <input
+                  name="q"
+                  defaultValue={search}
+                  placeholder="Rechercher..."
+                  className="flex-1 min-w-0 px-4 md:px-6 py-3 md:py-4 rounded-full text-black outline-none text-sm md:text-base"
+                />
+
+                <button
+                  type="submit"
+                  className="bg-black text-white px-5 md:px-8 rounded-full font-semibold flex items-center text-sm md:text-base"
+                >
+                  OK
+                </button>
+              </form>
+            </div>
           </div>
-
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-            FramEvent
-          </h1>
         </div>
-
-        <div className="mt-4 flex items-center gap-3">
-          <span className="h-px w-9 md:w-14 bg-[#d6a85f]" />
-          <p className="text-[#d6a85f] text-[10px] md:text-xs uppercase tracking-[0.25em] md:tracking-[0.35em]">
-            L’instant. L’émotion. L’image.
-          </p>
-        </div>
-      </div>
-
-      <div className="hidden md:flex gap-10 text-white/90 text-base">
-        <a href="#events" className="hover:text-white transition border-b border-[#d6a85f] pb-2">
-          Événements
-        </a>
-        <a href="#pricing" className="hover:text-white transition border-b border-[#d6a85f] pb-2">
-          Tarifs
-        </a>
-        <a href="#contact" className="hover:text-white transition border-b border-[#d6a85f] pb-2">
-          Contact
-        </a>
-      </div>
-    </nav>
-
-    <div className="flex-1 flex items-end md:items-center pb-20 md:pb-0">
-      <div className="w-full max-w-[360px] md:max-w-3xl px-5 md:px-8">
-        <h2 className="text-4xl md:text-6xl font-bold leading-[0.95] tracking-tight">
-          Vos photos.
-          <br />
-          Tout simplement.
-        </h2>
-
-        <div className="mt-5 md:mt-7 h-px w-12 md:w-14 bg-[#d6a85f]" />
-
-        <p className="mt-5 md:mt-7 text-base md:text-lg text-white/80 max-w-sm md:max-w-lg leading-relaxed">
-          Retrouvez votre galerie. Téléchargez vos images en HD.
-        </p>
-
-        <form
-          action="/"
-          className="mt-7 md:mt-10 bg-white rounded-full p-2 md:p-3 flex w-full max-w-sm md:max-w-xl shadow-2xl"
-        >
-          <input
-            name="q"
-            defaultValue={search}
-            placeholder="Rechercher..."
-            className="flex-1 min-w-0 px-4 md:px-6 py-3 md:py-4 rounded-full text-black outline-none text-sm md:text-base"
-          />
-
-          <button
-            type="submit"
-            className="bg-black text-white px-5 md:px-8 rounded-full font-semibold flex items-center text-sm md:text-base"
-          >
-            OK
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
       <section className="max-w-7xl mx-auto px-8 pt-16 pb-20">
         <div className="grid md:grid-cols-3 gap-6">
@@ -217,12 +239,12 @@ export default async function Home({
                 )}
 
                 <div
-  className="absolute inset-x-0 bottom-0 h-[45%]"
-  style={{
-    background:
-      'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 12%, rgba(0,0,0,0.75) 28%, rgba(0,0,0,0.45) 52%, rgba(0,0,0,0.15) 78%, rgba(0,0,0,0) 100%)'
-  }}
-/>
+                  className="absolute inset-x-0 bottom-0 h-[45%]"
+                  style={{
+                    background:
+                      'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 12%, rgba(0,0,0,0.75) 28%, rgba(0,0,0,0.45) 52%, rgba(0,0,0,0.15) 78%, rgba(0,0,0,0) 100%)',
+                  }}
+                />
 
                 <div className="absolute top-4 left-4">
                   <p className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-xl text-[11px] uppercase tracking-[3px] text-white border border-white/20">
