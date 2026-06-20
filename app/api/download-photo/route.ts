@@ -2,15 +2,6 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(
-  process.env.STRIPE_SECRET_KEY as string
-)
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.SUPABASE_SERVICE_ROLE_KEY as string
-)
-
 type MetadataCartItem = {
   photoId: number
   eventId: number
@@ -18,6 +9,30 @@ type MetadataCartItem = {
 
 export async function GET(request: Request) {
   try {
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!stripeSecretKey) {
+      return NextResponse.json(
+        { error: 'Missing STRIPE_SECRET_KEY' },
+        { status: 500 }
+      )
+    }
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json(
+        { error: 'Missing Supabase config' },
+        { status: 500 }
+      )
+    }
+
+    const stripe = new Stripe(stripeSecretKey)
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      supabaseServiceKey
+    )
+
     const { searchParams } = new URL(request.url)
 
     const fileName = searchParams.get('file')
