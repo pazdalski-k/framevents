@@ -2,15 +2,33 @@ import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.SUPABASE_SERVICE_ROLE_KEY as string
-)
-
 export async function POST(request: Request) {
   try {
+    const resendApiKey = process.env.RESEND_API_KEY
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!resendApiKey) {
+      return NextResponse.json(
+        { success: false, error: 'Missing RESEND_API_KEY' },
+        { status: 500 }
+      )
+    }
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json(
+        { success: false, error: 'Missing Supabase config' },
+        { status: 500 }
+      )
+    }
+
+    const resend = new Resend(resendApiKey)
+
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      supabaseServiceKey
+    )
+
     const body = await request.json()
     const { eventId } = body
 
@@ -73,15 +91,11 @@ export async function POST(request: Request) {
             <h2>FramEvent</h2>
 
             <p><strong>🇫🇷 Français</strong></p>
-            <p>
-              Bonjour,
-            </p>
+            <p>Bonjour,</p>
             <p>
               Les photos de l’événement <strong>${event.title}</strong> sont maintenant disponibles.
             </p>
-            <p>
-              Vous pouvez accéder à la galerie ici :
-            </p>
+            <p>Vous pouvez accéder à la galerie ici :</p>
             <p>
               <a href="${galleryUrl}" style="display:inline-block;background:#000;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;">
                 Voir la galerie
@@ -91,15 +105,11 @@ export async function POST(request: Request) {
             <hr style="margin: 24px 0; border: none; border-top: 1px solid #ddd;" />
 
             <p><strong>🇬🇧 English</strong></p>
-            <p>
-              Hello,
-            </p>
+            <p>Hello,</p>
             <p>
               The photos from <strong>${event.title}</strong> are now available.
             </p>
-            <p>
-              You can access the gallery here:
-            </p>
+            <p>You can access the gallery here:</p>
             <p>
               <a href="${galleryUrl}" style="display:inline-block;background:#000;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;">
                 View gallery
