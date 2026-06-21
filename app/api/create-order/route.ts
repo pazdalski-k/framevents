@@ -3,9 +3,17 @@ import Stripe from 'stripe'
 import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
 
+const PUBLIC_SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.framevents.fr'
+
 function getSiteUrl(request: Request) {
   const origin = request.headers.get('origin')
-  return origin || 'http://localhost:3000'
+
+  if (origin && !origin.includes('localhost')) {
+    return origin
+  }
+
+  return PUBLIC_SITE_URL
 }
 
 export async function POST(request: Request) {
@@ -16,30 +24,42 @@ export async function POST(request: Request) {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
     if (!stripeSecretKey) {
-      return NextResponse.json({ success: false, error: 'Missing STRIPE_SECRET_KEY' }, { status: 500 })
+      return NextResponse.json(
+        { success: false, error: 'Missing STRIPE_SECRET_KEY' },
+        { status: 500 }
+      )
     }
 
     if (!supabaseUrl || !supabaseServiceKey) {
-      return NextResponse.json({ success: false, error: 'Missing Supabase config' }, { status: 500 })
+      return NextResponse.json(
+        { success: false, error: 'Missing Supabase config' },
+        { status: 500 }
+      )
     }
 
     const stripe = new Stripe(stripeSecretKey)
     const resend = resendApiKey ? new Resend(resendApiKey) : null
-
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
     const body = await request.json()
     const { sessionId } = body
 
     if (!sessionId) {
-      return NextResponse.json({ success: false, error: 'Missing sessionId' }, { status: 400 })
+      return NextResponse.json(
+        { success: false, error: 'Missing sessionId' },
+        { status: 400 }
+      )
     }
 
     const siteUrl = getSiteUrl(request)
+
     const session = await stripe.checkout.sessions.retrieve(sessionId)
 
     if (session.payment_status !== 'paid') {
-      return NextResponse.json({ success: false, error: 'Payment not completed' }, { status: 400 })
+      return NextResponse.json(
+        { success: false, error: 'Payment not completed' },
+        { status: 400 }
+      )
     }
 
     const metadata = session.metadata || {}
@@ -86,7 +106,10 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 500 }
+      )
     }
 
     let eventTitle = 'FramEvents Gallery'
@@ -98,7 +121,9 @@ export async function POST(request: Request) {
         .eq('id', eventId)
         .single()
 
-      if (event?.title) eventTitle = event.title
+      if (event?.title) {
+        eventTitle = event.title
+      }
     }
 
     if (customerEmail && resend) {
@@ -111,13 +136,31 @@ export async function POST(request: Request) {
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111;">
             <h2>FramEvents</h2>
+
             <p>Merci pour votre achat.</p>
             <p>Votre commande pour <strong>${eventTitle}</strong> est prête.</p>
-            <p><a href="${downloadPageUrl}">Télécharger mes photos</a></p>
-            <hr />
+            <p>
+              <a href="${downloadPageUrl}" style="display:inline-block;background:#000;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;">
+                Télécharger mes photos
+              </a>
+            </p>
+
+            <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;" />
+
             <p>Thank you for your purchase.</p>
             <p>Your order for <strong>${eventTitle}</strong> is ready.</p>
-            <p><a href="${downloadPageUrl}">Download my photos</a></p>
+            <p>
+              <a href="${downloadPageUrl}" style="display:inline-block;background:#000;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;">
+                Download my photos
+              </a>
+            </p>
+
+            <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;" />
+
+            <p style="font-size:14px;color:#555;">
+              FramEvents<br />
+              Krzysztof Pazdalski
+            </p>
           </div>
         `,
       })
