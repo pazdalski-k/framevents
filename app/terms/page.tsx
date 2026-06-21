@@ -46,7 +46,7 @@ export default function TermsPage() {
             </p>
             <p className="mt-4">
               Toute demande concernant une image, un retrait, une erreur de commande
-              ou une question juridique peut être envoyée à : contact@framevent.fr
+              ou une question juridique peut être envoyée à : contact@framevents.fr
             </p>
           </div>
 
@@ -79,7 +79,7 @@ export default function TermsPage() {
             </p>
             <p className="mt-4">
               W sprawie zdjęcia, usunięcia fotografii, błędu zamówienia lub pytań
-              prawnych można pisać na: contact@framevent.fr
+              prawnych można pisać na: contact@framevents.fr
             </p>
           </div>
         </section>

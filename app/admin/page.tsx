@@ -103,17 +103,11 @@ export default function AdminPage() {
     loadEvents()
   }, [])
 
-  const getBaseUrl = () => {
-    if (typeof window !== 'undefined') {
-      return window.location.origin
-    }
+  const PUBLIC_SITE_URL = 'https://www.framevents.fr'
 
-    return 'https://framevent.fr'
-  }
-
-  const getEventUrl = (eventId: number) => {
-    return `${getBaseUrl()}/event/${eventId}`
-  }
+const getEventUrl = (eventId: number) => {
+  return `${PUBLIC_SITE_URL}/event/${eventId}`
+}
 
   const getQrUrl = (eventId: number) => {
     return `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(
