@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
         className="w-full max-w-md border border-white/10 bg-white/[0.03] rounded-3xl p-8"
       >
         <p className="uppercase tracking-[5px] text-white/40 text-xs mb-4">
-          FramEvent Admin
+          FramEvents Admin
         </p>
 
         <h1 className="text-4xl font-bold mb-8">

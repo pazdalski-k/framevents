@@ -113,7 +113,7 @@ export async function POST(request: Request) {
       )
     }
 
-    let eventTitle = 'FramEvent Gallery'
+    let eventTitle = 'FramEvents Gallery'
 
     if (eventId) {
       const { data: event } = await supabaseAdmin

@@ -170,7 +170,7 @@ function SuccessContent() {
             href="/"
             className="inline-block bg-white text-black px-8 py-4 rounded-full font-semibold"
           >
-            Retour à FramEvent
+            Retour à FramEvents
           </a>
         </div>
       </div>

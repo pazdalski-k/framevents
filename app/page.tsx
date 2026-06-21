@@ -48,31 +48,36 @@ export default async function Home({
     <main className="min-h-screen overflow-x-hidden bg-black text-white">
       <section className="relative min-h-[100svh] overflow-hidden">
         <img
-          src="/hero-framevent-2026.jpg"
-          alt="FramEvent"
-          className="absolute inset-0 h-full w-full object-cover object-[62%_28%] opacity-100 md:object-[70%_28%]"
-        />
+  src="/hero-framevent-2026.jpg"
+  alt="FramEvents"
+  className="absolute inset-0 h-full w-full object-cover object-[58%_38%] brightness-[0.88] contrast-[1.08] saturate-[0.92] md:object-[62%_42%]"
+/>
 
         <div
-          className="absolute inset-0"
-          style={{
-            background: `
-              linear-gradient(
-                180deg,
-                rgba(0,0,0,0.78) 0%,
-                rgba(0,0,0,0.35) 28%,
-                rgba(0,0,0,0.35) 48%,
-                rgba(0,0,0,0.92) 100%
-              ),
-              linear-gradient(
-                90deg,
-                rgba(0,0,0,0.82) 0%,
-                rgba(0,0,0,0.46) 46%,
-                rgba(0,0,0,0.08) 100%
-              )
-            `,
-          }}
-        />
+  className="absolute inset-0"
+  style={{
+    background: `
+      linear-gradient(
+        180deg,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.62) 14%,
+        rgba(0,0,0,0.22) 34%,
+        rgba(0,0,0,0.18) 55%,
+        rgba(0,0,0,0.72) 82%,
+        rgba(0,0,0,0.96) 100%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(0,0,0,0.88) 0%,
+        rgba(0,0,0,0.62) 32%,
+        rgba(0,0,0,0.25) 58%,
+        rgba(0,0,0,0.12) 100%
+      )
+    `,
+  }}
+/>
+
+<div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[10vh] bg-gradient-to-t from-black via-black/90 via-45% to-transparent" />
 
         <div className="relative z-10 flex min-h-[100svh] flex-col">
           <nav className="flex items-start justify-between px-4 py-5 md:px-8 md:py-6">
@@ -86,7 +91,7 @@ export default async function Home({
                 </div>
 
                 <h1 className="text-3xl font-bold tracking-tight md:text-5xl">
-                  FramEvent
+                  FramEvents
                 </h1>
               </div>
 
@@ -382,8 +387,8 @@ export default async function Home({
               <div className="space-y-4 text-base text-white/60 md:text-lg">
                 <p>📍 Normandie, France</p>
 
-                <a href="mailto:contact@framevent.fr" className="block transition hover:text-white">
-                  ✉️ contact@framevent.fr
+                <a href="mailto:contact@framevents.fr" className="block transition hover:text-white">
+                  ✉️ contact@framevents.fr
                 </a>
 
                 <a
@@ -403,7 +408,7 @@ export default async function Home({
               </p>
 
               <a
-                href="mailto:contact@framevent.fr"
+                href="mailto:contact@framevents.fr"
                 className="mt-8 inline-block rounded-full bg-white px-7 py-4 font-semibold text-black transition hover:scale-105 md:px-8"
               >
                 Envoyer un e-mail
@@ -417,7 +422,7 @@ export default async function Home({
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-16">
           <div>
             <h3 className="mb-5 text-3xl font-bold md:mb-6">
-              FramEvent
+              FramEvents
             </h3>
 
             <p className="leading-relaxed text-white/60">
@@ -425,7 +430,7 @@ export default async function Home({
             </p>
 
             <div className="mt-8 space-y-2 text-white/60">
-              <a href="mailto:contact@framevent.fr" className="block transition hover:text-white">
+              <a href="mailto:contact@framevents.fr" className="block transition hover:text-white">
                 Contact
               </a>
 
@@ -477,7 +482,7 @@ export default async function Home({
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-8 text-sm text-white/40 md:mt-16 md:flex-row md:justify-between">
-          <p>© 2026 FramEvent</p>
+          <p>© 2026 FramEvents</p>
           <p>Créé par Krzysztof Pazdalski</p>
         </div>
       </footer>

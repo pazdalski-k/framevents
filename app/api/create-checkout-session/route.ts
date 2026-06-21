@@ -38,7 +38,7 @@ export async function POST(request: Request) {
             currency: 'eur',
             unit_amount: Math.round(Number(price) * 100),
             product_data: {
-              name: 'FramEvent Full Gallery Access',
+              name: 'FramEvents Full Gallery Access',
               description:
                 eventTitle || 'Full event gallery access',
             },
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
           currency: 'eur',
           unit_amount: Math.round(Number(item.price) * 100),
           product_data: {
-            name: `FramEvent Photo #${item.photoId}`,
+            name: `FramEvents Photo #${item.photoId}`,
             description: `Event ID: ${item.eventId}`,
           },
         },
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
             currency: 'eur',
             unit_amount: Math.round(Number(price) * 100),
             product_data: {
-              name: `FramEvent Photo #${photoId}`,
+              name: `FramEvents Photo #${photoId}`,
               description: `Event ID: ${eventId}`,
             },
           },

@@ -45,7 +45,7 @@ async function createWatermarkedPreview(file: File) {
 
       for (let x = -canvas.width; x < canvas.width * 2; x += 520) {
         for (let y = -canvas.height; y < canvas.height * 2; y += 280) {
-          ctx.fillText('FramEvent', x, y)
+          ctx.fillText('FramEvents', x, y)
         }
       }
 

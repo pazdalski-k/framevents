@@ -56,7 +56,7 @@ async function createWatermarkedPreview(file: File) {
 
       for (let x = -canvas.width; x < canvas.width * 2; x += 520) {
         for (let y = -canvas.height; y < canvas.height * 2; y += 280) {
-          ctx.fillText('FramEvent', x, y)
+          ctx.fillText('FramEvents', x, y)
         }
       }
 
@@ -529,7 +529,7 @@ export default function AdminPage() {
     <main className="bg-black text-white min-h-screen p-10">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-5xl font-bold">
-          Administration FramEvent
+          Administration FramEvents
         </h1>
 
         <button

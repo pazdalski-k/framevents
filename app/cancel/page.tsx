@@ -14,7 +14,7 @@ export default function CancelPage() {
           href="/"
           className="inline-block border border-white/20 px-8 py-4 rounded-full font-semibold"
         >
-          Retour à FramEvent
+          Retour à FramEvents
         </a>
       </div>
     </main>

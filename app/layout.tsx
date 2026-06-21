@@ -18,17 +18,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default: "FramEvent — Photographie événementielle en Normandie",
-    template: "%s | FramEvent",
+    default: "FramEvents — Photographie événementielle en Normandie",
+    template: "%s | FramEvents",
   },
 
   description:
-    "FramEvent par Krzysztof Pazdalski — galeries photo d’événements en Normandie. Retrouvez, achetez et téléchargez vos photos en haute qualité.",
+    "FramEvents par Krzysztof Pazdalski — galeries photo d’événements en Normandie. Retrouvez, achetez et téléchargez vos photos en haute qualité.",
 
-  applicationName: "FramEvent",
+  applicationName: "FramEvents",
 
   keywords: [
-    "FramEvent",
+    "FramEvents",
     "photographe événementiel Normandie",
     "photographe Caen",
     "galerie photo événement",
@@ -37,6 +37,7 @@ export const metadata: Metadata = {
     "Krzysztof Pazdalski",
     "photo event Normandy",
     "event photography Caen",
+    "photos événements Normandie",
   ],
 
   authors: [
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
   ],
 
   creator: "Krzysztof Pazdalski",
-  publisher: "FramEvent",
+  publisher: "FramEvents",
 
   alternates: {
     canonical: siteUrl,
@@ -57,8 +58,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     url: siteUrl,
-    siteName: "FramEvent",
-    title: "FramEvent — Photographie événementielle en Normandie",
+    siteName: "FramEvents",
+    title: "FramEvents — Photographie événementielle en Normandie",
     description:
       "Galeries photo d’événements en Normandie. Retrouvez, achetez et téléchargez vos photos en haute qualité.",
     images: [
@@ -66,14 +67,14 @@ export const metadata: Metadata = {
         url: "/hero-framevent-2026.jpg",
         width: 1600,
         height: 900,
-        alt: "FramEvent — photographie événementielle en Normandie",
+        alt: "FramEvents — photographie événementielle en Normandie",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "FramEvent — Photographie événementielle en Normandie",
+    title: "FramEvents — Photographie événementielle en Normandie",
     description:
       "Galeries photo d’événements en Normandie. Retrouvez, achetez et téléchargez vos photos en haute qualité.",
     images: ["/hero-framevent-2026.jpg"],

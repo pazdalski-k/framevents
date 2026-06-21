@@ -5,7 +5,7 @@ export default function TermsPage() {
     <main className="min-h-screen bg-black text-white px-8 py-20">
       <div className="max-w-5xl mx-auto">
         <Link href="/" className="text-white/60 hover:text-white">
-          ← Back to FramEvent
+          ← Back to FramEvents
         </Link>
 
         <h1 className="text-5xl font-bold mt-10 mb-8">
@@ -22,7 +22,7 @@ export default function TermsPage() {
               🇫🇷 Français
             </h2>
             <p>
-              FramEvent est un service de photographie événementielle permettant
+              FramEvents est un service de photographie événementielle permettant
               l’achat et le téléchargement de photographies numériques.
             </p>
             <p className="mt-4">
@@ -55,7 +55,7 @@ export default function TermsPage() {
               🇵🇱 Polski
             </h2>
             <p>
-              FramEvent to serwis fotografii eventowej umożliwiający zakup
+              FramEvents to serwis fotografii eventowej umożliwiający zakup
               i pobieranie zdjęć cyfrowych.
             </p>
             <p className="mt-4">

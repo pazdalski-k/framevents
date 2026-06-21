@@ -1,4 +1,4 @@
-# FramEvent
+# FramEvents
 
 Premium event photography platform.
 

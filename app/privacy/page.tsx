@@ -5,7 +5,7 @@ export default function PrivacyPage() {
     <main className="min-h-screen bg-black text-white px-8 py-20">
       <div className="max-w-5xl mx-auto">
         <Link href="/" className="text-white/60 hover:text-white">
-          ← Back to FramEvent
+          ← Back to FramEvents
         </Link>
 
         <h1 className="text-5xl font-bold mt-10 mb-8">
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
               🇫🇷 Français
             </h2>
             <p>
-              FramEvent collecte uniquement les données nécessaires au fonctionnement
+              FramEvents collecte uniquement les données nécessaires au fonctionnement
               du service : consultation des galeries, achat de photographies, paiement,
               téléchargement des fichiers et contact client.
             </p>
@@ -32,13 +32,13 @@ export default function PrivacyPage() {
               contact et données techniques de navigation.
             </p>
             <p className="mt-4">
-              Les paiements sont traités par Stripe. FramEvent ne stocke pas les numéros
+              Les paiements sont traités par Stripe. FramEvents ne stocke pas les numéros
               complets de carte bancaire.
             </p>
             <p className="mt-4">
-              Les photographies publiées sur FramEvent peuvent représenter des personnes
+              Les photographies publiées sur FramEvents peuvent représenter des personnes
               présentes lors d’événements publics ou privés. Toute personne souhaitant
-              demander le retrait d’une image peut contacter FramEvent.
+              demander le retrait d’une image peut contacter FramEvents.
             </p>
             <p className="mt-4">
               Conformément au RGPD, vous pouvez demander l’accès, la rectification,
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
               🇵🇱 Polski
             </h2>
             <p>
-              FramEvent zbiera tylko dane potrzebne do działania serwisu:
+              FramEvents zbiera tylko dane potrzebne do działania serwisu:
               przeglądania galerii, zakupu zdjęć, płatności, pobierania plików
               oraz kontaktu z klientem.
             </p>
@@ -64,13 +64,13 @@ export default function PrivacyPage() {
               kontaktowe oraz techniczne dane przeglądania.
             </p>
             <p className="mt-4">
-              Płatności obsługuje Stripe. FramEvent nie przechowuje pełnych
+              Płatności obsługuje Stripe. FramEvents nie przechowuje pełnych
               numerów kart płatniczych.
             </p>
             <p className="mt-4">
-              Zdjęcia publikowane w FramEvent mogą przedstawiać osoby obecne
+              Zdjęcia publikowane w FramEvents mogą przedstawiać osoby obecne
               podczas wydarzeń publicznych lub prywatnych. Osoba, która chce
-              zgłosić usunięcie zdjęcia, może skontaktować się z FramEvent.
+              zgłosić usunięcie zdjęcia, może skontaktować się z FramEvents.
             </p>
             <p className="mt-4">
               Zgodnie z RODO możesz poprosić o dostęp, poprawienie, usunięcie

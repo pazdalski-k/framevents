@@ -265,7 +265,7 @@ export default function Gallery({
             <div className="mx-auto flex max-w-7xl items-center justify-between gap-6">
               <div className="min-w-0">
                 <p className="text-xs uppercase tracking-[4px] text-white/35">
-                  FramEvent
+                  FramEvents
                 </p>
 
                 <p className="mt-1 text-sm text-white/60">
@@ -307,7 +307,7 @@ export default function Gallery({
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[3px] text-white/35">
-                  FramEvent
+                  FramEvents
                 </p>
 
                 <p className="mt-1 text-sm font-semibold text-white">
@@ -357,7 +357,7 @@ export default function Gallery({
                       key={i}
                       className="whitespace-nowrap text-3xl font-black tracking-wide text-white/45 md:text-5xl"
                     >
-                      FramEvent
+                      FramEvents
                     </span>
                   ))}
                 </div>

@@ -89,7 +89,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
-    let eventTitle = 'FramEvent Gallery'
+    let eventTitle = 'FramEvents Gallery'
 
     if (eventId) {
       const { data: event } = await supabaseAdmin
@@ -105,12 +105,12 @@ export async function POST(request: Request) {
       const downloadPageUrl = `${siteUrl}/success?session_id=${session.id}`
 
       await resend.emails.send({
-        from: 'FramEvent <onboarding@resend.dev>',
+        from: 'FramEvents <onboarding@resend.dev>',
         to: customerEmail,
-        subject: 'FramEvent – Vos photos sont prêtes',
+        subject: 'FramEvents – Vos photos sont prêtes',
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111;">
-            <h2>FramEvent</h2>
+            <h2>FramEvents</h2>
             <p>Merci pour votre achat.</p>
             <p>Votre commande pour <strong>${eventTitle}</strong> est prête.</p>
             <p><a href="${downloadPageUrl}">Télécharger mes photos</a></p>

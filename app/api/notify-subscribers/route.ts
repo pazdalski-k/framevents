@@ -83,12 +83,12 @@ export async function POST(request: Request) {
 
     for (const subscriber of subscribers) {
       await resend.emails.send({
-        from: 'FramEvent <onboarding@resend.dev>',
+        from: 'FramEvents <onboarding@resend.dev>',
         to: subscriber.email,
-        subject: 'FramEvent – Gallery ready / Galerie disponible',
+        subject: 'FramEvents – Gallery ready / Galerie disponible',
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111;">
-            <h2>FramEvent</h2>
+            <h2>FramEvents</h2>
 
             <p><strong>🇫🇷 Français</strong></p>
             <p>Bonjour,</p>
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
             <hr style="margin: 24px 0; border: none; border-top: 1px solid #ddd;" />
 
             <p style="font-size: 14px; color: #555;">
-              FramEvent<br />
+              FramEvents<br />
               Krzysztof Pazdalski
             </p>
           </div>
