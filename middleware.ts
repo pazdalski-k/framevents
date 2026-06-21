@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+const ADMIN_COOKIE_NAME = 'framevents_admin_session'
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -8,9 +10,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const adminCookie = request.cookies.get('framevent_admin')?.value
+  const adminSessionToken = process.env.ADMIN_SESSION_TOKEN
+  const adminCookie = request.cookies.get(ADMIN_COOKIE_NAME)?.value
 
-  if (adminCookie === 'true') {
+  if (adminSessionToken && adminCookie === adminSessionToken) {
     return NextResponse.next()
   }
 
