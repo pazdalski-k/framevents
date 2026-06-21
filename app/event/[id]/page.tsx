@@ -54,6 +54,51 @@ function buildEventDescription(event: EventRecord) {
   return `Galerie photo ${event.title}${location}${date}. Retrouvez, achetez et téléchargez vos photos en haute qualité avec FramEvents.`
 }
 
+function EventQrCard({
+  eventUrl,
+  title,
+}: {
+  eventUrl: string
+  title: string
+}) {
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=18&data=${encodeURIComponent(
+    eventUrl
+  )}`
+
+  return (
+    <div className="rounded-[34px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl backdrop-blur-xl">
+      <p className="text-xs uppercase tracking-[5px] text-white/35">
+        QR Code
+      </p>
+
+      <h3 className="mt-4 text-2xl font-black leading-tight">
+        Partager cette galerie
+      </h3>
+
+      <p className="mt-4 text-sm leading-relaxed text-white/55">
+        Scannez ce QR code pour ouvrir directement la page de l’événement.
+      </p>
+
+      <div className="mt-6 rounded-[26px] bg-white p-4">
+        <img
+          src={qrUrl}
+          alt={`QR code ${title}`}
+          className="h-auto w-full rounded-[18px]"
+        />
+      </div>
+
+      <a
+        href={eventUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-5 block break-all text-sm text-white/45 transition hover:text-white"
+      >
+        {eventUrl}
+      </a>
+    </div>
+  )
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -180,6 +225,7 @@ export default async function EventPage({
   const typedPhotos = (photos || []) as PhotoRecord[]
   const hasPhotos = typedPhotos.length > 0
   const hasCoverImage = !!typedEvent.image_url
+  const eventUrl = `${siteUrl}/event/${typedEvent.id}`
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -237,8 +283,13 @@ export default async function EventPage({
         )}
 
         {!hasPhotos && (
-          <div className="mt-10">
+          <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px] lg:items-stretch">
             <EventNotificationForm eventId={typedEvent.id} />
+
+            <EventQrCard
+              eventUrl={eventUrl}
+              title={typedEvent.title}
+            />
           </div>
         )}
 
@@ -256,6 +307,13 @@ export default async function EventPage({
                 eventId={typedEvent.id}
                 eventTitle={typedEvent.title}
                 galleryPrice={typedEvent.gallery_price || 0}
+              />
+            </div>
+
+            <div className="mt-8 max-w-sm">
+              <EventQrCard
+                eventUrl={eventUrl}
+                title={typedEvent.title}
               />
             </div>
 
