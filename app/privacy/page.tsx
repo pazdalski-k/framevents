@@ -45,7 +45,7 @@ export default function PrivacyPage() {
               l’effacement ou la limitation du traitement de vos données.
             </p>
             <p className="mt-4">
-              Contact : pazdalski@gmail.com
+              Contact : contact@framevents.fr
             </p>
           </div>
 
@@ -77,7 +77,7 @@ export default function PrivacyPage() {
               lub ograniczenie przetwarzania swoich danych.
             </p>
             <p className="mt-4">
-              Kontakt: pazdalski@gmail.com
+              Kontakt: contact@framevents.fr
             </p>
           </div>
         </section>

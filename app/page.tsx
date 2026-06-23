@@ -5,7 +5,7 @@ import SelfieUploadBox from './components/SelfieUploadBox'
 export const dynamic = 'force-dynamic'
 
 const instagramUrl = 'https://www.instagram.com/kristof.pazdalski'
-const contactEmail = 'pazdalski@gmail.com'
+const contactEmail = 'contact@framevents.fr'
 
 export default async function Home({
   searchParams,
