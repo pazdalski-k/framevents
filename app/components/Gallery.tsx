@@ -279,11 +279,11 @@ export default function Gallery({
       {isCartOpen && (
         <div
           onClick={() => setIsCartOpen(false)}
-          className="fixed inset-0 z-[90] bg-black/80 p-2 pt-5 text-white backdrop-blur-xl md:p-8"
+          className="fixed inset-0 z-[90] bg-black/80 p-1 pt-3 text-white backdrop-blur-xl md:p-8"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="mx-auto flex h-[88svh] w-full max-w-4xl flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:h-auto md:max-h-[92svh] md:rounded-[40px]"
+            className="mx-auto flex h-[94svh] w-full max-w-4xl flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:h-auto md:max-h-[92svh] md:rounded-[40px]"
           >
             <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/10 p-3 md:p-8">
               <div>
