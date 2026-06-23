@@ -283,7 +283,7 @@ export default function Gallery({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="mx-auto flex h-[84svh] w-full max-w-4xl flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:h-auto md:max-h-[92svh] md:rounded-[40px]"
+            className="mx-auto flex h-[88svh] w-full max-w-4xl flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:h-auto md:max-h-[92svh] md:rounded-[40px]"
           >
             <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/10 p-3 md:p-8">
               <div>
@@ -369,8 +369,8 @@ export default function Gallery({
               )}
             </div>
 
-            <div className="shrink-0 border-t border-white/10 bg-black/50 p-3 md:p-8">
-              <div className="mb-3 flex items-center justify-between text-sm md:mb-5 md:text-lg">
+            <div className="shrink-0 border-t border-white/10 bg-black/50 p-2 pb-2 md:p-8">
+              <div className="mb-2 flex items-center justify-between text-sm md:mb-5 md:text-lg">
                 <span className="text-white/60">Total</span>
                 <span className="text-xl font-black text-white md:text-2xl">
                   {formatPrice(total)}
@@ -396,7 +396,7 @@ export default function Gallery({
                 <button
                   onClick={checkoutCart}
                   disabled={cart.length === 0}
-                  className="col-span-2 rounded-full bg-white px-5 py-2.5 text-sm font-black text-black transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-35 md:col-span-1 md:px-6 md:py-3"
+                  className="col-span-2 rounded-full bg-white px-5 py-2 text-sm font-black text-black transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-35 md:col-span-1 md:px-6 md:py-3"
                 >
                   Passer au paiement
                 </button>
