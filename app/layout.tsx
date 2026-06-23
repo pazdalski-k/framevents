@@ -18,26 +18,39 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default: "FramEvents — Photographie événementielle en Normandie",
+    default: "FramEvents — Photographe événementiel à Caen en Normandie",
     template: "%s | FramEvents",
   },
 
   description:
-    "FramEvents par Krzysztof Pazdalski — galeries photo d’événements en Normandie. Retrouvez, achetez et téléchargez vos photos en haute qualité.",
+    "FramEvents par Krzysztof Pazdalski — photographe événementiel à Caen et en Normandie. Galeries photo pour événements sportifs, privés et professionnels avec achat et téléchargement HD sécurisé.",
 
   applicationName: "FramEvents",
 
   keywords: [
     "FramEvents",
+    "Krzysztof Pazdalski",
+    "photographe événementiel Caen",
     "photographe événementiel Normandie",
     "photographe Caen",
-    "galerie photo événement",
+    "photographe Normandie",
+    "photographie événementielle Caen",
+    "photographie événementielle Normandie",
+    "galerie photo événement Caen",
+    "galerie photo événement Normandie",
     "photos événement sportif",
-    "photographie événementielle",
-    "Krzysztof Pazdalski",
+    "photos événement sportif Normandie",
+    "photos triathlon Deauville",
+    "photographe Deauville",
+    "photographe Ouistreham",
+    "photographe mariage Caen",
+    "photographe portrait Caen",
+    "photographe famille Caen",
+    "galerie photo en ligne",
+    "téléchargement photos HD",
     "photo event Normandy",
     "event photography Caen",
-    "photos événements Normandie",
+    "event photographer Normandy",
   ],
 
   authors: [
@@ -59,24 +72,24 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: siteUrl,
     siteName: "FramEvents",
-    title: "FramEvents — Photographie événementielle en Normandie",
+    title: "FramEvents — Photographe événementiel à Caen en Normandie",
     description:
-      "Galeries photo d’événements en Normandie. Retrouvez, achetez et téléchargez vos photos en haute qualité.",
+      "Photographe événementiel à Caen et en Normandie. Galeries photo pour événements sportifs, privés et professionnels avec achat et téléchargement HD sécurisé.",
     images: [
       {
         url: "/hero-framevent-2026.jpg",
         width: 1600,
         height: 900,
-        alt: "FramEvents — photographie événementielle en Normandie",
+        alt: "FramEvents — photographe événementiel à Caen en Normandie",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "FramEvents — Photographie événementielle en Normandie",
+    title: "FramEvents — Photographe événementiel à Caen en Normandie",
     description:
-      "Galeries photo d’événements en Normandie. Retrouvez, achetez et téléchargez vos photos en haute qualité.",
+      "Galeries photo pour événements sportifs, privés et professionnels en Normandie. Achat et téléchargement HD sécurisé.",
     images: ["/hero-framevent-2026.jpg"],
   },
 
