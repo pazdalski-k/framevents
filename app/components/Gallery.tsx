@@ -279,19 +279,19 @@ export default function Gallery({
       {isCartOpen && (
         <div
           onClick={() => setIsCartOpen(false)}
-          className="fixed inset-0 z-[90] bg-black/80 p-4 text-white backdrop-blur-xl md:p-8"
+          className="fixed inset-0 z-[90] bg-black/80 p-2 pt-5 text-white backdrop-blur-xl md:p-8"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="mx-auto flex max-h-[92svh] w-full max-w-4xl flex-col overflow-hidden rounded-[32px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:rounded-[40px]"
+            className="mx-auto flex h-[86svh] w-full max-w-4xl flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:h-auto md:max-h-[92svh] md:rounded-[40px]"
           >
-            <div className="flex items-start justify-between gap-6 border-b border-white/10 p-5 md:p-8">
+            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/10 p-4 md:p-8">
               <div>
                 <p className="text-xs uppercase tracking-[4px] text-[#d6a85f]">
                   Panier
                 </p>
 
-                <h3 className="mt-2 text-3xl font-black md:text-4xl">
+                <h3 className="mt-2 text-2xl font-black leading-tight md:text-4xl">
                   Votre sélection
                 </h3>
 
@@ -303,14 +303,14 @@ export default function Gallery({
 
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-2xl text-white transition hover:bg-white/20"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-2xl text-white transition hover:bg-white/20 md:h-11 md:w-11"
                 aria-label="Fermer le panier"
               >
                 ×
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5 md:p-8">
+            <div className="min-h-0 flex-1 overflow-y-auto p-4 md:p-8">
               {cart.length === 0 ? (
                 <div className="rounded-[28px] border border-white/10 bg-black/40 p-8 text-center">
                   <h4 className="text-2xl font-bold">
@@ -322,26 +322,26 @@ export default function Gallery({
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-3 md:gap-4">
                   {cart.map((item, index) => (
                     <div
                       key={item.photoId}
-                      className="grid grid-cols-[88px_1fr] gap-4 rounded-[24px] border border-white/10 bg-black/35 p-3 md:grid-cols-[120px_1fr_auto] md:items-center md:p-4"
+                      className="grid grid-cols-[74px_1fr] gap-3 rounded-[22px] border border-white/10 bg-black/35 p-3 md:grid-cols-[120px_1fr_auto] md:items-center md:gap-4 md:rounded-[24px] md:p-4"
                     >
                       <img
                         src={item.imageUrl}
                         alt=""
                         draggable={false}
                         onContextMenu={(e) => e.preventDefault()}
-                        className="h-[88px] w-[88px] rounded-[18px] object-cover md:h-[96px] md:w-[120px]"
+                        className="h-[74px] w-[74px] rounded-[16px] object-cover md:h-[96px] md:w-[120px] md:rounded-[18px]"
                       />
 
                       <div className="min-w-0">
-                        <p className="text-xs uppercase tracking-[3px] text-white/35">
+                        <p className="text-[10px] uppercase tracking-[3px] text-white/35 md:text-xs">
                           Photo #{index + 1}
                         </p>
 
-                        <p className="mt-2 font-bold text-white">
+                        <p className="mt-1 text-sm font-bold text-white md:mt-2 md:text-base">
                           Image HD sans filigrane
                         </p>
 
@@ -351,7 +351,7 @@ export default function Gallery({
 
                         <button
                           onClick={() => removeFromCart(item.photoId)}
-                          className="mt-4 rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 md:hidden"
+                          className="mt-3 rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 md:hidden"
                         >
                           Supprimer
                         </button>
@@ -369,18 +369,18 @@ export default function Gallery({
               )}
             </div>
 
-            <div className="border-t border-white/10 bg-black/50 p-5 md:p-8">
-              <div className="mb-5 flex items-center justify-between text-lg">
+            <div className="shrink-0 border-t border-white/10 bg-black/50 p-4 md:p-8">
+              <div className="mb-4 flex items-center justify-between text-base md:mb-5 md:text-lg">
                 <span className="text-white/60">Total</span>
                 <span className="text-2xl font-black text-white">
                   {formatPrice(total)}
                 </span>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="grid gap-2 md:grid-cols-3 md:gap-3">
                 <button
                   onClick={() => setIsCartOpen(false)}
-                  className="rounded-full border border-white/15 px-6 py-4 text-sm font-bold text-white transition hover:bg-white/10"
+                  className="rounded-full border border-white/15 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/10"
                 >
                   Continuer
                 </button>
@@ -388,7 +388,7 @@ export default function Gallery({
                 <button
                   onClick={clearCart}
                   disabled={cart.length === 0}
-                  className="rounded-full border border-white/15 px-6 py-4 text-sm font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-35"
+                  className="rounded-full border border-white/15 px-6 py-3 text-sm font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-35"
                 >
                   Vider le panier
                 </button>
@@ -396,7 +396,7 @@ export default function Gallery({
                 <button
                   onClick={checkoutCart}
                   disabled={cart.length === 0}
-                  className="rounded-full bg-white px-6 py-4 text-sm font-black text-black transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-35"
+                  className="rounded-full bg-white px-6 py-3 text-sm font-black text-black transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-35"
                 >
                   Passer au paiement
                 </button>
