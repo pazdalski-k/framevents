@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
 import { useRouter } from 'next/navigation'
 
 type UploadStatus = {
@@ -88,28 +87,6 @@ export default function AdminUploadPhotos({
       .replace(/[^a-z0-9.-]/g, '')
   }
 
-  const updatePhotoCount = async () => {
-    const { count, error } = await supabase
-      .from('photos')
-      .select('*', {
-        count: 'exact',
-        head: true,
-      })
-      .eq('event_id', eventId)
-
-    if (error) {
-      console.log('PHOTO COUNT ERROR:', error)
-      return
-    }
-
-    await supabase
-      .from('events')
-      .update({
-        photos_count: count || 0,
-      })
-      .eq('id', eventId)
-  }
-
   const uploadPhotos = async () => {
     if (files.length === 0) {
       alert('Wybierz zdjęcia do uploadu.')
@@ -134,26 +111,58 @@ export default function AdminUploadPhotos({
         )
       )
 
-      const cleanName = safeFileName(file.name)
-      const timestamp = Date.now()
+      try {
+        const cleanName = safeFileName(file.name)
+        const timestamp = Date.now()
 
-      const previewFileName =
-        `${eventId}/${timestamp}-preview-${crypto.randomUUID()}-${cleanName}.jpg`
+        const previewFileName =
+          `${eventId}/${timestamp}-preview-${crypto.randomUUID()}-${cleanName}.jpg`
 
-      const hdFileName =
-        `${eventId}/${timestamp}-hd-${crypto.randomUUID()}-${cleanName}`
+        const hdFileName =
+          `${eventId}/${timestamp}-hd-${crypto.randomUUID()}-${cleanName}`
 
-      const previewBlob = await createWatermarkedPreview(file)
+        const previewBlob = await createWatermarkedPreview(file)
 
-      const { error: previewError } = await supabase.storage
-        .from('event-photos-preview')
-        .upload(previewFileName, previewBlob, {
-          contentType: 'image/jpeg',
-          upsert: false,
+        const previewFile = new File(
+          [previewBlob],
+          previewFileName,
+          {
+            type: 'image/jpeg',
+          }
+        )
+
+        const formData = new FormData()
+        formData.append('eventId', String(eventId))
+        formData.append('previewFileName', previewFileName)
+        formData.append('hdFileName', hdFileName)
+        formData.append('previewFile', previewFile)
+        formData.append('hdFile', file)
+
+        const response = await fetch('/api/admin-upload-photo', {
+          method: 'POST',
+          body: formData,
         })
 
-      if (previewError) {
-        console.log('PREVIEW UPLOAD ERROR:', previewError)
+        const result = await response.json()
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Upload error')
+        }
+
+        setStatuses((current) =>
+          current.map((item) =>
+            item.name === file.name
+              ? { ...item, status: 'done' }
+              : item
+          )
+        )
+      } catch (error) {
+        console.log('ADMIN UPLOAD ERROR:', error)
+
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Upload error'
 
         setStatuses((current) =>
           current.map((item) =>
@@ -161,82 +170,13 @@ export default function AdminUploadPhotos({
               ? {
                   ...item,
                   status: 'error',
-                  message: previewError.message,
+                  message,
                 }
               : item
           )
         )
-
-        continue
       }
-
-      const { error: hdError } = await supabase.storage
-        .from('event-photos-hd')
-        .upload(hdFileName, file, {
-          upsert: false,
-        })
-
-      if (hdError) {
-        console.log('HD UPLOAD ERROR:', hdError)
-
-        setStatuses((current) =>
-          current.map((item) =>
-            item.name === file.name
-              ? {
-                  ...item,
-                  status: 'error',
-                  message: hdError.message,
-                }
-              : item
-          )
-        )
-
-        continue
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from('event-photos-preview')
-        .getPublicUrl(previewFileName)
-
-      const imageUrl = publicUrlData.publicUrl
-
-      const { error: insertError } = await supabase
-        .from('photos')
-        .insert({
-          event_id: eventId,
-          image_url: imageUrl,
-          file_name: previewFileName,
-          hd_file_name: hdFileName,
-        })
-
-      if (insertError) {
-        console.log('PHOTO INSERT ERROR:', insertError)
-
-        setStatuses((current) =>
-          current.map((item) =>
-            item.name === file.name
-              ? {
-                  ...item,
-                  status: 'error',
-                  message: insertError.message,
-                }
-              : item
-          )
-        )
-
-        continue
-      }
-
-      setStatuses((current) =>
-        current.map((item) =>
-          item.name === file.name
-            ? { ...item, status: 'done' }
-            : item
-        )
-      )
     }
-
-    await updatePhotoCount()
 
     setUploading(false)
     router.refresh()
@@ -245,9 +185,9 @@ export default function AdminUploadPhotos({
   }
 
   return (
-    <div className="border border-white/10 rounded-3xl p-8 bg-white/[0.03]">
+    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8">
       <label className="block">
-        <span className="text-white/60 text-sm uppercase tracking-[3px]">
+        <span className="text-sm uppercase tracking-[3px] text-white/60">
           Select photos
         </span>
 
@@ -273,7 +213,7 @@ export default function AdminUploadPhotos({
       <button
         onClick={uploadPhotos}
         disabled={uploading}
-        className="mt-8 px-8 py-4 rounded-full bg-white text-black font-bold disabled:opacity-40"
+        className="mt-8 rounded-full bg-white px-8 py-4 font-bold text-black disabled:opacity-40"
       >
         {uploading ? 'Uploading...' : 'Upload Photos'}
       </button>
@@ -283,15 +223,15 @@ export default function AdminUploadPhotos({
           {statuses.map((item) => (
             <div
               key={item.name}
-              className="flex items-center justify-between border border-white/10 rounded-2xl px-4 py-3"
+              className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3"
             >
               <div>
-                <p className="text-white text-sm">
+                <p className="text-sm text-white">
                   {item.name}
                 </p>
 
                 {item.message && (
-                  <p className="text-red-400 text-xs mt-1">
+                  <p className="mt-1 text-xs text-red-400">
                     {item.message}
                   </p>
                 )}
