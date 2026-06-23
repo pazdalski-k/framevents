@@ -123,20 +123,12 @@ export default function AdminUploadPhotos({
 
         const previewBlob = await createWatermarkedPreview(file)
 
-        const previewFile = new File(
-          [previewBlob],
-          previewFileName,
-          {
-            type: 'image/jpeg',
-          }
-        )
-
         const formData = new FormData()
         formData.append('eventId', String(eventId))
         formData.append('previewFileName', previewFileName)
         formData.append('hdFileName', hdFileName)
-        formData.append('previewFile', previewFile)
-        formData.append('hdFile', file)
+        formData.append('previewFile', previewBlob, 'preview.jpg')
+        formData.append('hdFile', file, cleanName)
 
         const response = await fetch('/api/admin-upload-photo', {
           method: 'POST',
