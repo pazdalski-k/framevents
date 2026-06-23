@@ -474,6 +474,60 @@ export default async function Home({
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-5 py-20 md:px-8 md:py-24">
+        <div className="rounded-[36px] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(214,168,95,0.16),transparent_38%),#111111] p-8 md:rounded-[44px] md:p-14">
+          <div className="grid gap-12 md:grid-cols-[1.15fr_0.85fr] md:items-start">
+            <div>
+              <p className="text-xs uppercase tracking-[5px] text-[#d6a85f] md:text-sm md:tracking-[6px]">
+                PHOTOGRAPHE EN NORMANDIE
+              </p>
+
+              <h2 className="mt-5 text-4xl font-bold leading-tight md:text-6xl">
+                Photographe événementiel à Caen et en Normandie
+              </h2>
+
+              <div className="mt-6 h-px w-16 bg-[#d6a85f]" />
+
+              <p className="mt-7 max-w-3xl text-lg leading-relaxed text-white/65 md:text-xl">
+                FramEvents accompagne les événements sportifs, privés et professionnels
+                en Normandie avec des galeries photo élégantes, rapides et sécurisées.
+                Chaque galerie permet de retrouver ses images, d’acheter une photo
+                individuelle ou une galerie complète, puis de télécharger les fichiers
+                HD après paiement.
+              </p>
+
+              <p className="mt-6 max-w-3xl leading-relaxed text-white/45">
+                Basé près de Caen, Krzysztof Pazdalski réalise des reportages photo
+                pour les événements à Caen, Deauville, Ouistreham et dans toute la
+                Normandie : sport, danse, triathlon, événements associatifs, entreprises,
+                mariages, portraits et séances photo privées.
+              </p>
+            </div>
+
+            <div className="rounded-[32px] border border-white/10 bg-black/40 p-7 md:p-8">
+              <h3 className="text-2xl font-bold">
+                Services photo
+              </h3>
+
+              <div className="mt-7 space-y-4 text-white/60">
+                <p>• Photographie événementielle à Caen</p>
+                <p>• Galeries photo pour événements sportifs</p>
+                <p>• Reportages privés et professionnels</p>
+                <p>• Photos de mariage, couple, famille et portrait</p>
+                <p>• Téléchargement HD sécurisé après achat</p>
+              </div>
+
+              <a
+                href="#contact"
+                className="mt-8 inline-block rounded-full bg-white px-7 py-4 font-semibold text-black transition hover:scale-105 hover:bg-[#d6a85f]"
+              >
+                Demander une prestation
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="contact" className="mx-auto max-w-7xl px-5 py-24 md:px-8 md:py-28">
         <div className="mb-10 md:mb-14">
           <p className="text-xs uppercase tracking-[5px] text-white/40 md:text-sm md:tracking-[6px]">
