@@ -283,19 +283,19 @@ export default function Gallery({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="mx-auto flex h-[86svh] w-full max-w-4xl flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:h-auto md:max-h-[92svh] md:rounded-[40px]"
+            className="mx-auto flex h-[78svh] w-full max-w-4xl flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#111111] shadow-[0_40px_140px_rgba(0,0,0,0.85)] md:h-auto md:max-h-[92svh] md:rounded-[40px]"
           >
-            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/10 p-4 md:p-8">
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/10 p-3 md:p-8">
               <div>
-                <p className="text-xs uppercase tracking-[4px] text-[#d6a85f]">
+                <p className="text-[10px] uppercase tracking-[4px] text-[#d6a85f] md:text-xs">
                   Panier
                 </p>
 
-                <h3 className="mt-2 text-2xl font-black leading-tight md:text-4xl">
+                <h3 className="mt-1 text-xl font-black leading-tight md:mt-2 md:text-4xl">
                   Votre sélection
                 </h3>
 
-                <p className="mt-2 text-sm text-white/50">
+                <p className="mt-1 text-xs text-white/50 md:mt-2 md:text-sm">
                   {cart.length} photo{cart.length > 1 ? 's' : ''} · Total{' '}
                   {formatPrice(total)}
                 </p>
@@ -303,21 +303,21 @@ export default function Gallery({
 
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-2xl text-white transition hover:bg-white/20 md:h-11 md:w-11"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-xl text-white transition hover:bg-white/20 md:h-11 md:w-11 md:text-2xl"
                 aria-label="Fermer le panier"
               >
                 ×
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-4 md:p-8">
+            <div className="min-h-0 flex-1 overflow-y-auto p-3 md:p-8">
               {cart.length === 0 ? (
-                <div className="rounded-[28px] border border-white/10 bg-black/40 p-8 text-center">
-                  <h4 className="text-2xl font-bold">
+                <div className="rounded-[24px] border border-white/10 bg-black/40 p-6 text-center md:rounded-[28px] md:p-8">
+                  <h4 className="text-xl font-bold md:text-2xl">
                     Aucune photo sélectionnée
                   </h4>
 
-                  <p className="mt-3 text-white/50">
+                  <p className="mt-3 text-sm text-white/50 md:text-base">
                     Ajoutez une photo au panier pour continuer.
                   </p>
                 </div>
@@ -326,32 +326,32 @@ export default function Gallery({
                   {cart.map((item, index) => (
                     <div
                       key={item.photoId}
-                      className="grid grid-cols-[74px_1fr] gap-3 rounded-[22px] border border-white/10 bg-black/35 p-3 md:grid-cols-[120px_1fr_auto] md:items-center md:gap-4 md:rounded-[24px] md:p-4"
+                      className="grid grid-cols-[64px_1fr] gap-3 rounded-[18px] border border-white/10 bg-black/35 p-2.5 md:grid-cols-[120px_1fr_auto] md:items-center md:gap-4 md:rounded-[24px] md:p-4"
                     >
                       <img
                         src={item.imageUrl}
                         alt=""
                         draggable={false}
                         onContextMenu={(e) => e.preventDefault()}
-                        className="h-[74px] w-[74px] rounded-[16px] object-cover md:h-[96px] md:w-[120px] md:rounded-[18px]"
+                        className="h-[64px] w-[64px] rounded-[14px] object-cover md:h-[96px] md:w-[120px] md:rounded-[18px]"
                       />
 
                       <div className="min-w-0">
-                        <p className="text-[10px] uppercase tracking-[3px] text-white/35 md:text-xs">
+                        <p className="text-[9px] uppercase tracking-[3px] text-white/35 md:text-xs">
                           Photo #{index + 1}
                         </p>
 
-                        <p className="mt-1 text-sm font-bold text-white md:mt-2 md:text-base">
+                        <p className="mt-1 text-sm font-bold leading-tight text-white md:mt-2 md:text-base">
                           Image HD sans filigrane
                         </p>
 
-                        <p className="mt-1 text-sm text-white/50">
+                        <p className="mt-1 text-xs text-white/50 md:text-sm">
                           {formatPrice(item.price)}
                         </p>
 
                         <button
                           onClick={() => removeFromCart(item.photoId)}
-                          className="mt-3 rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 md:hidden"
+                          className="mt-2 rounded-full border border-white/10 px-3 py-1.5 text-[11px] font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 md:hidden"
                         >
                           Supprimer
                         </button>
@@ -369,10 +369,10 @@ export default function Gallery({
               )}
             </div>
 
-            <div className="shrink-0 border-t border-white/10 bg-black/50 p-4 md:p-8">
-              <div className="mb-4 flex items-center justify-between text-base md:mb-5 md:text-lg">
+            <div className="shrink-0 border-t border-white/10 bg-black/50 p-3 md:p-8">
+              <div className="mb-3 flex items-center justify-between text-sm md:mb-5 md:text-lg">
                 <span className="text-white/60">Total</span>
-                <span className="text-2xl font-black text-white">
+                <span className="text-xl font-black text-white md:text-2xl">
                   {formatPrice(total)}
                 </span>
               </div>
@@ -380,7 +380,7 @@ export default function Gallery({
               <div className="grid gap-2 md:grid-cols-3 md:gap-3">
                 <button
                   onClick={() => setIsCartOpen(false)}
-                  className="rounded-full border border-white/15 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/10"
+                  className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/10 md:px-6 md:py-3"
                 >
                   Continuer
                 </button>
@@ -388,7 +388,7 @@ export default function Gallery({
                 <button
                   onClick={clearCart}
                   disabled={cart.length === 0}
-                  className="rounded-full border border-white/15 px-6 py-3 text-sm font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-35"
+                  className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-bold text-white/75 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-35 md:px-6 md:py-3"
                 >
                   Vider le panier
                 </button>
@@ -396,7 +396,7 @@ export default function Gallery({
                 <button
                   onClick={checkoutCart}
                   disabled={cart.length === 0}
-                  className="rounded-full bg-white px-6 py-3 text-sm font-black text-black transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-35"
+                  className="rounded-full bg-white px-5 py-2.5 text-sm font-black text-black transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-35 md:px-6 md:py-3"
                 >
                   Passer au paiement
                 </button>
