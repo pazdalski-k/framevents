@@ -2,11 +2,26 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { supabase } from '../lib/supabase'
 
 type UploadStatus = {
   name: string
   status: 'waiting' | 'uploading' | 'done' | 'error'
   message?: string
+}
+
+type SignedUploadResponse = {
+  success: boolean
+  preview: {
+    path: string
+    token: string
+    imageUrl: string
+  }
+  hd: {
+    path: string
+    token: string
+  }
+  error?: string
 }
 
 async function createWatermarkedPreview(file: File) {
@@ -123,22 +138,80 @@ export default function AdminUploadPhotos({
 
         const previewBlob = await createWatermarkedPreview(file)
 
-        const formData = new FormData()
-        formData.append('eventId', String(eventId))
-        formData.append('previewFileName', previewFileName)
-        formData.append('hdFileName', hdFileName)
-        formData.append('previewFile', previewBlob, 'preview.jpg')
-        formData.append('hdFile', file, cleanName)
-
-        const response = await fetch('/api/admin-upload-photo', {
+        const signedResponse = await fetch('/api/admin-upload-photo', {
           method: 'POST',
-          body: formData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'createSignedUrls',
+            eventId,
+            previewFileName,
+            hdFileName,
+          }),
         })
 
-        const result = await response.json()
+        const signedResult =
+          (await signedResponse.json()) as SignedUploadResponse
 
-        if (!response.ok) {
-          throw new Error(result.error || 'Upload error')
+        if (!signedResponse.ok) {
+          throw new Error(
+            signedResult.error ||
+              'Could not create signed upload URLs'
+          )
+        }
+
+        const { error: previewUploadError } = await supabase.storage
+          .from('event-photos-preview')
+          .uploadToSignedUrl(
+            signedResult.preview.path,
+            signedResult.preview.token,
+            previewBlob,
+            {
+              contentType: 'image/jpeg',
+            }
+          )
+
+        if (previewUploadError) {
+          throw new Error(previewUploadError.message)
+        }
+
+        const { error: hdUploadError } = await supabase.storage
+          .from('event-photos-hd')
+          .uploadToSignedUrl(
+            signedResult.hd.path,
+            signedResult.hd.token,
+            file,
+            {
+              contentType:
+                file.type || 'application/octet-stream',
+            }
+          )
+
+        if (hdUploadError) {
+          throw new Error(hdUploadError.message)
+        }
+
+        const confirmResponse = await fetch('/api/admin-upload-photo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'confirmUpload',
+            eventId,
+            imageUrl: signedResult.preview.imageUrl,
+            previewFileName,
+            hdFileName,
+          }),
+        })
+
+        const confirmResult = await confirmResponse.json()
+
+        if (!confirmResponse.ok) {
+          throw new Error(
+            confirmResult.error || 'Could not confirm upload'
+          )
         }
 
         setStatuses((current) =>
