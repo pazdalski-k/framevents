@@ -167,6 +167,32 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      const { data: eventForCover } = await supabaseAdmin
+        .from('events')
+        .select('id, image_url, cover_image')
+        .eq('id', payload.eventId)
+        .single()
+
+      const eventCoverUpdate: {
+        image_url?: string
+        cover_image?: string
+      } = {}
+
+      if (!eventForCover?.image_url) {
+        eventCoverUpdate.image_url = payload.imageUrl
+      }
+
+      if (!eventForCover?.cover_image) {
+        eventCoverUpdate.cover_image = payload.imageUrl
+      }
+
+      if (Object.keys(eventCoverUpdate).length > 0) {
+        await supabaseAdmin
+          .from('events')
+          .update(eventCoverUpdate)
+          .eq('id', payload.eventId)
+      }
+
       const { count, error: countError } = await supabaseAdmin
         .from('photos')
         .select('*', {
