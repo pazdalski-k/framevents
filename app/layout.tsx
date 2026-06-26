@@ -14,16 +14,20 @@ const geistMono = Geist_Mono({
 
 const siteUrl = "https://www.framevents.fr";
 
+const seoTitle = "FramEvents — Photographe événementiel à Caen en Normandie";
+
+const seoDescription =
+  "Photographe événementiel à Caen et en Normandie. Galeries photo privées et sportives avec achat sécurisé et téléchargement HD.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default: "FramEvents — Photographe événementiel à Caen en Normandie",
+    default: seoTitle,
     template: "%s | FramEvents",
   },
 
-  description:
-    "FramEvents par Krzysztof Pazdalski — photographe événementiel à Caen et en Normandie. Galeries photo pour événements sportifs, privés et professionnels avec achat et téléchargement HD sécurisé.",
+  description: seoDescription,
 
   applicationName: "FramEvents",
 
@@ -72,9 +76,8 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: siteUrl,
     siteName: "FramEvents",
-    title: "FramEvents — Photographe événementiel à Caen en Normandie",
-    description:
-      "Photographe événementiel à Caen et en Normandie. Galeries photo pour événements sportifs, privés et professionnels avec achat et téléchargement HD sécurisé.",
+    title: seoTitle,
+    description: seoDescription,
     images: [
       {
         url: "/hero-framevent-2026.jpg",
@@ -87,9 +90,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "FramEvents — Photographe événementiel à Caen en Normandie",
-    description:
-      "Galeries photo pour événements sportifs, privés et professionnels en Normandie. Achat et téléchargement HD sécurisé.",
+    title: seoTitle,
+    description: seoDescription,
     images: ["/hero-framevent-2026.jpg"],
   },
 
