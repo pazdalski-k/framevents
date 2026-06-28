@@ -181,7 +181,7 @@ export default async function Home({
       </section>
 
       <section id="qr" className="mx-auto max-w-7xl px-5 pt-16 pb-20 md:px-8">
-        <div className="grid gap-5 md:grid-cols-3 md:gap-6">
+        <div className="grid gap-5 md:grid-cols-2 md:gap-6">
           <a
             href="#events"
             className="group rounded-[32px] border border-white/10 bg-[#111111] p-7 transition duration-300 hover:-translate-y-1 hover:border-[#d6a85f]/50 hover:bg-[#151515] md:p-8"
@@ -250,7 +250,7 @@ export default async function Home({
 
           <a
             href="#selfie"
-            className="group rounded-[32px] border border-white/10 bg-[#111111] p-7 transition duration-300 hover:-translate-y-1 hover:border-[#d6a85f]/50 hover:bg-[#151515] md:p-8"
+            className="hidden group rounded-[32px] border border-white/10 bg-[#111111] p-7 transition duration-300 hover:-translate-y-1 hover:border-[#d6a85f]/50 hover:bg-[#151515] md:p-8"
           >
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-2xl text-[#d6a85f]">
               ◎
@@ -372,7 +372,7 @@ export default async function Home({
         </div>
       </section>
 
-      <section id="selfie" className="mx-auto max-w-7xl px-5 py-24 md:px-8 md:py-28">
+      <section id="selfie" className="hidden mx-auto max-w-7xl px-5 py-24 md:px-8 md:py-28">
         <div className="mb-10 md:mb-14">
           <p className="text-xs uppercase tracking-[5px] text-white/40 md:text-sm md:tracking-[6px]">
             RECHERCHE IA
