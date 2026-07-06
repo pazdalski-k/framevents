@@ -17,6 +17,7 @@ type EventItem = {
   photos_count: number | null
   photo_price: number | null
   gallery_price: number | null
+  sales_enabled: boolean | null
   is_published: boolean | null
   email_signups?: number
 }
@@ -92,6 +93,7 @@ export default function AdminPage() {
   const [category, setCategory] = useState('')
   const [photoPrice, setPhotoPrice] = useState('0.5')
   const [galleryPrice, setGalleryPrice] = useState('10')
+  const [salesEnabled, setSalesEnabled] = useState(true)
   const [images, setImages] = useState<FileList | null>(null)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [quickTitle, setQuickTitle] = useState('')
@@ -333,6 +335,7 @@ const getEventUrl = (eventId: number) => {
           category,
           photo_price: parsedPhotoPrice,
           gallery_price: parsedGalleryPrice,
+          sales_enabled: salesEnabled,
         })
         .eq('id', editingId)
         .select()
@@ -359,6 +362,7 @@ const getEventUrl = (eventId: number) => {
             photos_count: 0,
             photo_price: parsedPhotoPrice,
             gallery_price: parsedGalleryPrice,
+            sales_enabled: salesEnabled,
             is_published: true,
           },
         ])
@@ -683,6 +687,24 @@ const getEventUrl = (eventId: number) => {
           />
         </div>
 
+        <label className="flex items-center justify-between gap-4 rounded-2xl border border-zinc-700 bg-zinc-900 p-5">
+          <div>
+            <p className="text-lg font-bold text-white">
+              Vente en ligne
+            </p>
+            <p className="mt-1 text-sm text-white/50">
+              Désactivez cette option pour masquer les prix, le panier et les boutons d’achat.
+            </p>
+          </div>
+
+          <input
+            type="checkbox"
+            checked={salesEnabled}
+            onChange={(e) => setSalesEnabled(e.target.checked)}
+            className="h-6 w-6 accent-white"
+          />
+        </label>
+
         <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-5">
           <p className="text-white/70 mb-3">
             Photo de couverture / photos de l’événement — optionnel
@@ -848,6 +870,7 @@ const getEventUrl = (eventId: number) => {
                     setCategory(event.category || '')
                     setPhotoPrice(String(event.photo_price || 0.5))
                     setGalleryPrice(String(event.gallery_price || 10))
+                    setSalesEnabled(event.sales_enabled !== false)
                   }}
                   className="px-4 py-2 rounded-xl bg-zinc-700 hover:bg-zinc-600 transition"
                 >
