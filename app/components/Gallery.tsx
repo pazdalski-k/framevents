@@ -20,10 +20,12 @@ export default function Gallery({
   photos,
   photoPrice,
   eventId,
+  salesActive = true,
 }: {
   photos: Photo[]
   photoPrice: number
   eventId: number
+  salesActive?: boolean
 }) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
   const [cart, setCart] = useState<CartItem[]>([])
@@ -101,7 +103,7 @@ export default function Gallery({
   }, [selectedImage, photos.length, isCartOpen])
 
   const buyPhoto = async () => {
-    if (!selectedPhoto) return
+    if (!salesActive || !selectedPhoto) return
 
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
@@ -121,7 +123,7 @@ export default function Gallery({
   }
 
   const addToCart = () => {
-    if (!selectedPhoto) return
+    if (!salesActive || !selectedPhoto) return
 
     setCart((currentCart) => {
       const alreadyExists = currentCart.some(
@@ -149,7 +151,7 @@ export default function Gallery({
   }
 
   const checkoutCart = async () => {
-    if (cart.length === 0) return
+    if (!salesActive || cart.length === 0) return
 
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
@@ -195,7 +197,7 @@ export default function Gallery({
 
   return (
     <>
-      {cart.length > 0 && (
+      {salesActive && cart.length > 0 && (
         <div className="sticky top-4 z-40 mb-8 flex justify-center px-4">
           <div className="flex w-full max-w-4xl flex-col gap-3 rounded-[28px] border border-white/10 bg-white p-4 text-black shadow-2xl md:flex-row md:items-center md:justify-between md:rounded-full md:px-6 md:py-4">
             <button
@@ -251,19 +253,21 @@ export default function Gallery({
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/70 to-transparent" />
 
               <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
-                <div className="rounded-full border border-white/15 bg-black/65 px-4 py-2 text-sm font-bold text-white shadow-xl backdrop-blur-xl">
-                  {formatPrice(photoPrice)}
-                </div>
+                {salesActive && (
+                  <div className="rounded-full border border-white/15 bg-black/65 px-4 py-2 text-sm font-bold text-white shadow-xl backdrop-blur-xl">
+                    {formatPrice(photoPrice)}
+                  </div>
+                )}
 
                 <button
                   onClick={() => setSelectedImage(index)}
                   className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-black shadow-xl transition hover:scale-[1.04]"
                 >
-                  Voir / acheter
+                  {salesActive ? 'Voir / acheter' : 'Voir'}
                 </button>
               </div>
 
-              {isInCart && (
+              {salesActive && isInCart && (
                 <button
                   onClick={() => removeFromCart(photo.id)}
                   className="absolute right-4 top-4 rounded-full border border-white/15 bg-white px-4 py-2 text-xs font-bold text-black shadow-xl transition hover:scale-[1.04]"
@@ -276,7 +280,7 @@ export default function Gallery({
         })}
       </div>
 
-      {isCartOpen && (
+      {salesActive && isCartOpen && (
         <div
           onClick={() => setIsCartOpen(false)}
           className="fixed inset-0 z-[90] bg-black/80 p-1 pt-3 text-white backdrop-blur-xl md:p-8"
@@ -429,30 +433,34 @@ export default function Gallery({
               </div>
 
               <div className="flex items-center gap-3">
-                <button
-                  onClick={addToCart}
-                  className="rounded-full border border-white/20 bg-white/8 px-7 py-4 text-sm font-bold text-white backdrop-blur-xl transition hover:bg-white/15"
-                >
-                  {isSelectedPhotoInCart
-                    ? 'Déjà dans le panier ✓'
-                    : added
-                      ? 'Ajouté ✓'
-                      : 'Ajouter au panier'}
-                </button>
+                {salesActive && (
+                  <>
+                    <button
+                      onClick={addToCart}
+                      className="rounded-full border border-white/20 bg-white/8 px-7 py-4 text-sm font-bold text-white backdrop-blur-xl transition hover:bg-white/15"
+                    >
+                      {isSelectedPhotoInCart
+                        ? 'Déjà dans le panier ✓'
+                        : added
+                          ? 'Ajouté ✓'
+                          : 'Ajouter au panier'}
+                    </button>
 
-                <button
-                  onClick={() => setIsCartOpen(true)}
-                  className="rounded-full border border-[#d6a85f]/50 bg-[#d6a85f]/10 px-7 py-4 text-sm font-bold text-[#d6a85f] transition hover:bg-[#d6a85f] hover:text-black"
-                >
-                  Voir le panier ({cart.length})
-                </button>
+                    <button
+                      onClick={() => setIsCartOpen(true)}
+                      className="rounded-full border border-[#d6a85f]/50 bg-[#d6a85f]/10 px-7 py-4 text-sm font-bold text-[#d6a85f] transition hover:bg-[#d6a85f] hover:text-black"
+                    >
+                      Voir le panier ({cart.length})
+                    </button>
 
-                <button
-                  onClick={buyPhoto}
-                  className="rounded-full bg-white px-8 py-4 text-sm font-black text-black shadow-2xl transition hover:scale-[1.03]"
-                >
-                  Acheter la photo {formatPrice(photoPrice)}
-                </button>
+                    <button
+                      onClick={buyPhoto}
+                      className="rounded-full bg-white px-8 py-4 text-sm font-black text-black shadow-2xl transition hover:scale-[1.03]"
+                    >
+                      Acheter la photo {formatPrice(photoPrice)}
+                    </button>
+                  </>
+                )}
 
                 <button
                   onClick={() => setSelectedImage(null)}
@@ -565,37 +573,39 @@ export default function Gallery({
             </button>
           </div>
 
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="absolute inset-x-0 bottom-0 z-[75] border-t border-white/10 bg-black/92 px-4 pb-5 pt-4 backdrop-blur-2xl md:hidden"
-          >
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                onClick={addToCart}
-                className="rounded-full border border-white/18 bg-white/10 px-3 py-4 text-xs font-bold text-white"
-              >
-                {isSelectedPhotoInCart
-                  ? 'Ajoutée ✓'
-                  : added
-                    ? 'Ajouté ✓'
-                    : 'Ajouter'}
-              </button>
+          {salesActive && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="absolute inset-x-0 bottom-0 z-[75] border-t border-white/10 bg-black/92 px-4 pb-5 pt-4 backdrop-blur-2xl md:hidden"
+            >
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={addToCart}
+                  className="rounded-full border border-white/18 bg-white/10 px-3 py-4 text-xs font-bold text-white"
+                >
+                  {isSelectedPhotoInCart
+                    ? 'Ajoutée ✓'
+                    : added
+                      ? 'Ajouté ✓'
+                      : 'Ajouter'}
+                </button>
 
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="rounded-full border border-[#d6a85f]/50 bg-[#d6a85f]/10 px-3 py-4 text-xs font-bold text-[#d6a85f]"
-              >
-                Panier ({cart.length})
-              </button>
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="rounded-full border border-[#d6a85f]/50 bg-[#d6a85f]/10 px-3 py-4 text-xs font-bold text-[#d6a85f]"
+                >
+                  Panier ({cart.length})
+                </button>
 
-              <button
-                onClick={buyPhoto}
-                className="rounded-full bg-white px-3 py-4 text-xs font-black text-black shadow-2xl"
-              >
-                Acheter
-              </button>
+                <button
+                  onClick={buyPhoto}
+                  className="rounded-full bg-white px-3 py-4 text-xs font-black text-black shadow-2xl"
+                >
+                  Acheter
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </>

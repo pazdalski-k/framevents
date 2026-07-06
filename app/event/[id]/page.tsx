@@ -17,6 +17,10 @@ type EventRecord = {
   image_url?: string | null
   photo_price?: number | null
   gallery_price?: number | null
+  sales_enabled?: boolean | null
+  sales_end_date?: string | null
+  show_gallery_after_sales?: boolean | null
+  sales_closed_message?: string | null
 }
 
 type PhotoRecord = {
@@ -227,6 +231,26 @@ export default async function EventPage({
   const hasCoverImage = !!typedEvent.image_url
   const eventUrl = `${siteUrl}/event/${typedEvent.id}`
 
+  const defaultSalesEndDate = typedEvent.date
+    ? new Date(new Date(typedEvent.date).getTime() + 21 * 24 * 60 * 60 * 1000)
+    : null
+
+  const salesEndDate = typedEvent.sales_end_date
+    ? new Date(typedEvent.sales_end_date)
+    : defaultSalesEndDate
+
+  const isSalesActive =
+    typedEvent.sales_enabled !== false &&
+    (!salesEndDate || salesEndDate.getTime() >= Date.now())
+
+  const salesEndDateLabel = salesEndDate
+    ? formatDate(salesEndDate.toISOString())
+    : ''
+
+  const salesClosedMessage =
+    typedEvent.sales_closed_message ||
+    'La période d’achat en ligne est terminée. Les photos restent visibles comme archive de l’événement. Pour une demande spécifique, contactez le photographe.'
+
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-4 py-5 md:px-8">
@@ -303,12 +327,41 @@ export default async function EventPage({
                 Voir les photos
               </a>
 
-              <BuyGalleryButton
-                eventId={typedEvent.id}
-                eventTitle={typedEvent.title}
-                galleryPrice={typedEvent.gallery_price || 0}
-              />
+              {isSalesActive && (
+                <BuyGalleryButton
+                  eventId={typedEvent.id}
+                  eventTitle={typedEvent.title}
+                  galleryPrice={typedEvent.gallery_price || 0}
+                />
+              )}
             </div>
+
+            {isSalesActive ? (
+              <div className="mt-6 rounded-[28px] border border-[#d6a85f]/25 bg-[#d6a85f]/10 p-5 text-sm leading-relaxed text-[#f5d28b]">
+                Photos disponibles à l’achat{salesEndDateLabel ? ` jusqu’au ${salesEndDateLabel}` : ''}.
+              </div>
+            ) : (
+              <div className="mt-6 rounded-[28px] border border-white/10 bg-white/[0.04] p-6">
+                <p className="text-xs uppercase tracking-[5px] text-[#d6a85f]">
+                  Galerie archivée
+                </p>
+
+                <h3 className="mt-3 text-2xl font-black">
+                  Achat en ligne terminé
+                </h3>
+
+                <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/55 md:text-base">
+                  {salesClosedMessage}
+                </p>
+
+                <a
+                  href="mailto:contact@framevents.fr"
+                  className="mt-5 inline-flex rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition hover:scale-[1.03]"
+                >
+                  Contacter le photographe
+                </a>
+              </div>
+            )}
 
             <div className="mt-8 max-w-sm">
               <EventQrCard
@@ -332,6 +385,7 @@ export default async function EventPage({
                 photos={typedPhotos}
                 photoPrice={typedEvent.photo_price || 0}
                 eventId={typedEvent.id}
+                salesActive={isSalesActive}
               />
             </div>
           </>
