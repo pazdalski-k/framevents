@@ -84,6 +84,51 @@ async function createWatermarkedPreview(file: File) {
   })
 }
 
+async function createOptimizedHd(file: File) {
+  return new Promise<Blob>((resolve, reject) => {
+    const img = new Image()
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      img.src = reader.result as string
+    }
+
+    img.onload = () => {
+      const maxWidth = 4000
+      const scale = Math.min(1, maxWidth / img.width)
+
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+
+      const ctx = canvas.getContext('2d')
+
+      if (!ctx) {
+        reject('Canvas error')
+        return
+      }
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject('HD optimization error')
+            return
+          }
+
+          resolve(blob)
+        },
+        'image/jpeg',
+        0.86
+      )
+    }
+
+    img.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function AdminUploadPhotos({
   eventId,
 }: {
@@ -137,6 +182,7 @@ export default function AdminUploadPhotos({
           `${eventId}/${timestamp}-hd-${crypto.randomUUID()}-${cleanName}`
 
         const previewBlob = await createWatermarkedPreview(file)
+        const hdBlob = await createOptimizedHd(file)
 
         const signedResponse = await fetch('/api/admin-upload-photo', {
           method: 'POST',
@@ -181,10 +227,9 @@ export default function AdminUploadPhotos({
           .uploadToSignedUrl(
             signedResult.hd.path,
             signedResult.hd.token,
-            file,
+            hdBlob,
             {
-              contentType:
-                file.type || 'application/octet-stream',
+              contentType: 'image/jpeg',
             }
           )
 
