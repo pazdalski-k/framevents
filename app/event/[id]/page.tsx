@@ -197,6 +197,8 @@ export default async function EventPage({
     .from('photos')
     .select('*')
     .eq('event_id', Number(id))
+    .order('sort_order', { ascending: true, nullsFirst: false })
+    .order('id', { ascending: true })
 
   if (!event) {
     return (

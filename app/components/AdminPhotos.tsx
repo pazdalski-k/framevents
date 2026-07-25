@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useRouter } from 'next/navigation'
 
@@ -9,6 +10,7 @@ type Photo = {
   event_id: number
   file_name: string | null
   hd_file_name?: string | null
+  sort_order?: number | null
 }
 
 export default function AdminPhotos({
@@ -17,6 +19,61 @@ export default function AdminPhotos({
   photos: Photo[]
 }) {
   const router = useRouter()
+
+  const [orderedPhotos, setOrderedPhotos] = useState<Photo[]>(photos)
+  const [draggedPhotoId, setDraggedPhotoId] = useState<number | null>(null)
+  const [savingOrder, setSavingOrder] = useState(false)
+
+  const savePhotoOrder = async (nextPhotos: Photo[]) => {
+    setSavingOrder(true)
+
+    const updates = nextPhotos.map((photo, index) =>
+      supabase
+        .from('photos')
+        .update({ sort_order: index + 1 })
+        .eq('id', photo.id)
+    )
+
+    const results = await Promise.all(updates)
+    const error = results.find((result) => result.error)?.error
+
+    setSavingOrder(false)
+
+    if (error) {
+      alert('Błąd zapisu kolejności: ' + JSON.stringify(error))
+      return
+    }
+
+    router.refresh()
+  }
+
+  const handleDrop = async (targetPhotoId: number) => {
+    if (!draggedPhotoId || draggedPhotoId === targetPhotoId) {
+      setDraggedPhotoId(null)
+      return
+    }
+
+    const currentPhotos = [...orderedPhotos]
+    const draggedIndex = currentPhotos.findIndex(
+      (photo) => photo.id === draggedPhotoId
+    )
+    const targetIndex = currentPhotos.findIndex(
+      (photo) => photo.id === targetPhotoId
+    )
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedPhotoId(null)
+      return
+    }
+
+    const [draggedPhoto] = currentPhotos.splice(draggedIndex, 1)
+    currentPhotos.splice(targetIndex, 0, draggedPhoto)
+
+    setOrderedPhotos(currentPhotos)
+    setDraggedPhotoId(null)
+
+    await savePhotoOrder(currentPhotos)
+  }
 
   const setAsCover = async (photo: Photo) => {
     const confirmed = confirm(
@@ -55,6 +112,7 @@ export default function AdminPhotos({
       .from('photos')
       .select('*')
       .eq('event_id', deletedPhoto.event_id)
+      .order('sort_order', { ascending: true, nullsFirst: false })
       .order('id', { ascending: true })
 
     const newCount = remainingPhotos?.length || 0
@@ -142,52 +200,96 @@ export default function AdminPhotos({
 
     await updateEventAfterDelete(photo)
 
+    setOrderedPhotos((current) =>
+      current.filter((item) => item.id !== photo.id)
+    )
+
     alert('Zdjęcie usunięte')
     router.refresh()
   }
 
   return (
-    <div className="grid md:grid-cols-4 gap-6">
-      {photos.map((photo) => (
-        <div
-          key={photo.id}
-          className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800"
-        >
-          <img
-            src={photo.image_url}
-            alt=""
-            className="w-full h-64 object-cover"
-          />
+    <div>
+      <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-sm text-white/60">
+        <p className="font-semibold text-white">
+          Drag & drop order
+        </p>
+        <p className="mt-2">
+          Przeciągnij zdjęcie i upuść je w nowe miejsce. Kolejność zapisuje się automatycznie.
+        </p>
 
-          <div className="p-4">
-            <p className="text-sm text-white/50">
-              ID: {photo.id}
-            </p>
+        {savingOrder && (
+          <p className="mt-3 text-[#d6a85f]">
+            Zapisywanie kolejności...
+          </p>
+        )}
+      </div>
 
-            <p className="text-xs text-white/30 mt-1 break-all">
-              Preview: {photo.file_name || 'brak'}
-            </p>
+      <div className="grid gap-6 md:grid-cols-4">
+        {orderedPhotos.map((photo, index) => (
+          <div
+            key={photo.id}
+            draggable
+            onDragStart={() => setDraggedPhotoId(photo.id)}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={() => handleDrop(photo.id)}
+            onDragEnd={() => setDraggedPhotoId(null)}
+            className={`overflow-hidden rounded-2xl border bg-zinc-900 transition ${
+              draggedPhotoId === photo.id
+                ? 'scale-[0.98] border-[#d6a85f] opacity-50'
+                : 'border-zinc-800 hover:border-white/30'
+            }`}
+          >
+            <div className="relative">
+              <img
+                src={photo.image_url}
+                alt=""
+                className="h-64 w-full cursor-grab object-cover active:cursor-grabbing"
+              />
 
-            <p className="text-xs text-white/30 mt-1 break-all">
-              HD: {photo.hd_file_name || 'brak'}
-            </p>
+              <div className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-xs font-bold text-white backdrop-blur-xl">
+                #{index + 1}
+              </div>
 
-            <button
-              onClick={() => setAsCover(photo)}
-              className="mt-4 w-full bg-white text-black hover:scale-[1.02] transition py-3 rounded-xl font-semibold"
-            >
-              ⭐ Set as Cover
-            </button>
+              <div className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-bold text-black">
+                Drag
+              </div>
+            </div>
 
-            <button
-              onClick={() => deletePhoto(photo)}
-              className="mt-3 w-full bg-red-600 hover:bg-red-700 transition py-3 rounded-xl font-semibold"
-            >
-              Delete Photo
-            </button>
+            <div className="p-4">
+              <p className="text-sm text-white/50">
+                ID: {photo.id}
+              </p>
+
+              <p className="mt-1 text-xs text-white/30">
+                Position: {index + 1}
+              </p>
+
+              <p className="mt-1 break-all text-xs text-white/30">
+                Preview: {photo.file_name || 'brak'}
+              </p>
+
+              <p className="mt-1 break-all text-xs text-white/30">
+                HD: {photo.hd_file_name || 'brak'}
+              </p>
+
+              <button
+                onClick={() => setAsCover(photo)}
+                className="mt-4 w-full rounded-xl bg-white py-3 font-semibold text-black transition hover:scale-[1.02]"
+              >
+                ⭐ Set as Cover
+              </button>
+
+              <button
+                onClick={() => deletePhoto(photo)}
+                className="mt-3 w-full rounded-xl bg-red-600 py-3 font-semibold transition hover:bg-red-700"
+              >
+                Delete Photo
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

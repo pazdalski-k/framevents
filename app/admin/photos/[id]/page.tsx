@@ -20,6 +20,8 @@ export default async function PhotosAdminPage({
     .from('photos')
     .select('*')
     .eq('event_id', eventId)
+    .order('sort_order', { ascending: true, nullsFirst: false })
+    .order('id', { ascending: true })
 
   return (
     <main className="min-h-screen bg-black p-6 text-white md:p-10">
