@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "01-portrait-femme",
+    "source": "_1677644.jpg",
+    "category": "Portrait",
+    "tile": "seances-01-portrait-femme.webp",
+    "full": "seances-01-portrait-femme-full.webp"
+  },
+  {
+    "slug": "02-mariage-couple-lac",
+    "source": "IMG_6420.jpg",
+    "category": "Mariage",
+    "tile": "seances-02-mariage-couple-lac.webp",
+    "full": "seances-02-mariage-couple-lac-full.webp"
+  },
+  {
+    "slug": "03-mariage-palais",
+    "source": "IMG_6522.jpg",
+    "category": "Mariage",
+    "tile": "seances-03-mariage-palais.webp",
+    "full": "seances-03-mariage-palais-full.webp"
+  },
+  {
+    "slug": "04-famille-mariage",
+    "source": "P1395940.jpg",
+    "category": "Famille",
+    "tile": "seances-04-famille-mariage.webp",
+    "full": "seances-04-famille-mariage-full.webp"
+  },
+  {
+    "slug": "05-famille-naturelle",
+    "source": "P1396003.jpg",
+    "category": "Famille",
+    "tile": "seances-05-famille-naturelle.webp",
+    "full": "seances-05-famille-naturelle-full.webp"
+  },
+  {
+    "slug": "06-bebe-douceur",
+    "source": "P1755637-Edit-2-Edytuj-Edytuj.jpg",
+    "category": "Bébé",
+    "tile": "seances-06-bebe-douceur.webp",
+    "full": "seances-06-bebe-douceur-full.webp"
+  },
+  {
+    "slug": "07-grossesse-plage",
+    "source": "P1900635-Edytuj.jpg",
+    "category": "Grossesse",
+    "tile": "seances-07-grossesse-plage.webp",
+    "full": "seances-07-grossesse-plage-full.webp"
+  },
+  {
+    "slug": "08-grossesse-couple",
+    "source": "P1900674.jpg",
+    "category": "Grossesse",
+    "tile": "seances-08-grossesse-couple.webp",
+    "full": "seances-08-grossesse-couple-full.webp"
+  },
+  {
+    "slug": "09-couple-intime",
+    "source": "P1900772.jpg",
+    "category": "Couple",
+    "tile": "seances-09-couple-intime.webp",
+    "full": "seances-09-couple-intime-full.webp"
+  },
+  {
+    "slug": "10-mariage-groupe",
+    "source": "P1395535-Edytuj.jpg",
+    "category": "Groupe",
+    "tile": "seances-10-mariage-groupe.webp",
+    "full": "seances-10-mariage-groupe-full.webp"
+  }
+]

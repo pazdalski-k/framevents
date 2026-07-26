@@ -119,6 +119,13 @@ export default async function Home({
               </a>
 
               <a
+                href="#seances"
+                className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f]/70 hover:text-white"
+              >
+                Séances
+              </a>
+
+              <a
                 href="#qr"
                 className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f]/70 hover:text-white"
               >
@@ -369,6 +376,176 @@ export default async function Home({
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section id="seances" className="mx-auto max-w-7xl px-5 py-24 md:px-8 md:py-28">
+        <div className="overflow-hidden rounded-[36px] border border-white/10 bg-[#0d0d0d] md:rounded-[48px]">
+          <div className="relative p-7 md:p-14">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(214,168,95,0.20),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_32%)]" />
+
+            <div className="relative grid gap-12 md:grid-cols-[1.15fr_0.85fr] md:items-end">
+              <div>
+                <p className="text-xs uppercase tracking-[5px] text-[#d6a85f] md:text-sm md:tracking-[6px]">
+                  SÉANCES PHOTO
+                </p>
+
+                <h2 className="mt-5 max-w-4xl text-4xl font-black leading-[0.96] tracking-tight md:text-6xl">
+                  Séances photo famille & moments de vie
+                </h2>
+
+                <p className="mt-7 max-w-3xl text-lg leading-relaxed text-white/60 md:text-xl">
+                  Des photos naturelles et élégantes pour garder une trace des moments importants :
+                  famille, couple, grossesse, portrait ou projet personnel.
+                </p>
+
+                <p className="mt-5 max-w-3xl leading-relaxed text-white/42">
+                  Chaque séance est pensée avec simplicité, douceur et attention aux détails,
+                  pour créer des images sincères, lumineuses et intemporelles.
+                </p>
+
+                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href={`mailto:${contactEmail}?subject=Demande%20de%20s%C3%A9ance%20photo`}
+                    className="rounded-full bg-white px-8 py-4 text-center font-bold text-black transition hover:scale-[1.03] hover:bg-[#d6a85f]"
+                  >
+                    Demander une séance
+                  </a>
+
+                  <a
+                    href="#contact"
+                    className="rounded-full border border-white/15 px-8 py-4 text-center font-bold text-white/80 transition hover:border-white/35 hover:bg-white/10 hover:text-white"
+                  >
+                    Poser une question
+                  </a>
+                </div>
+              </div>
+
+              <div className="rounded-[32px] border border-white/10 bg-black/35 p-6 backdrop-blur-xl md:p-7">
+                <p className="text-xs uppercase tracking-[4px] text-white/35">
+                  Pour qui ?
+                </p>
+
+                <div className="mt-5 grid gap-3">
+                  {[
+                    ['Famille', 'Parents, enfants, souvenirs naturels'],
+                    ['Couple', 'Moments à deux, engagement, complicité'],
+                    ['Grossesse', 'Images douces avant l’arrivée de bébé'],
+                    ['Portrait', 'Profil, confiance, projet personnel'],
+                  ].map(([title, description]) => (
+                    <div
+                      key={title}
+                      className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4"
+                    >
+                      <p className="font-bold text-white">
+                        {title}
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-white/45">
+                        {description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="relative mt-14 border-t border-white/10 pt-10">
+              <div className="mb-7 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[5px] text-white/35">
+                    Portfolio sélectionné
+                  </p>
+
+                  <h3 className="mt-3 text-3xl font-black tracking-tight md:text-4xl">
+                    Une approche douce, naturelle et soignée
+                  </h3>
+                </div>
+
+                <p className="max-w-xl text-sm leading-relaxed text-white/45">
+                  Découvrez une sélection d’images issues de séances privées : famille,
+                  couple, grossesse, portrait et moments de vie.
+                </p>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-4">
+                {[
+                  {
+                    title: 'Famille',
+                    description: 'Liens, rires et instants vrais',
+                    image: '/seances/seances-05-famille-naturelle-full.webp',
+                    className: 'md:col-span-2 min-h-[340px]',
+                  },
+                  {
+                    title: 'Grossesse',
+                    description: 'Douceur avant l’arrivée de bébé',
+                    image: '/seances/seances-07-grossesse-plage.webp',
+                    className: 'min-h-[250px]',
+                  },
+                  {
+                    title: 'Couple',
+                    description: 'Complicité et émotion',
+                    image: '/seances/seances-09-couple-intime.webp',
+                    className: 'min-h-[250px]',
+                  },
+                  {
+                    title: 'Portrait',
+                    description: 'Présence naturelle et élégante',
+                    image: '/seances/seances-01-portrait-femme.webp',
+                    className: 'min-h-[250px]',
+                  },
+                  {
+                    title: 'Mariage',
+                    description: 'Cérémonies intimes et souvenirs',
+                    image: '/seances/seances-02-mariage-couple-lac.webp',
+                    className: 'min-h-[250px]',
+                  },
+                  {
+                    title: 'Bébé',
+                    description: 'Gestes tendres et lumière douce',
+                    image: '/seances/seances-06-bebe-douceur.webp',
+                    className: 'min-h-[250px]',
+                  },
+                  {
+                    title: 'Famille',
+                    description: 'Moments simples et précieux',
+                    image: '/seances/seances-04-famille-mariage-full.webp',
+                    className: 'min-h-[250px]',
+                  },
+                ].map((item) => (
+                  <div
+                    key={`${item.title}-${item.image}`}
+                    className={`group relative overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] transition hover:-translate-y-1 hover:border-[#d6a85f]/40 ${item.className}`}
+                  >
+                    <img
+                      src={item.image}
+                      alt={`${item.title} — séance photo FramEvents`}
+                      className={`absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105 ${
+                        item.image.includes('seances-04-famille-mariage')
+                          ? 'object-top'
+                          : 'object-center'
+                      }`}
+                    />
+
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05)_0%,rgba(0,0,0,0.25)_45%,rgba(0,0,0,0.88)_100%)]" />
+
+                    <div className="absolute bottom-0 left-0 right-0 p-5">
+                      <p className="text-xs uppercase tracking-[4px] text-[#d6a85f]">
+                        Séance
+                      </p>
+
+                      <h4 className="mt-3 text-2xl font-black">
+                        {item.title}
+                      </h4>
+
+                      <p className="mt-2 text-sm text-white/65">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -647,13 +824,21 @@ export default async function Home({
       </footer>
 
       <nav className="fixed inset-x-4 bottom-4 z-50 rounded-[32px] border border-white/15 bg-black/78 px-3 py-3 shadow-[0_20px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl md:hidden">
-        <div className="grid grid-cols-4 gap-1 text-center">
+        <div className="grid grid-cols-5 gap-1 text-center">
           <a
             href="#events"
             className="rounded-[24px] border border-[#d6a85f]/60 bg-[#d6a85f]/10 px-2 py-3 text-[#d6a85f]"
           >
             <span className="block text-xl leading-none">▧</span>
             <span className="mt-1 block text-[11px] font-medium">Galeries</span>
+          </a>
+
+          <a
+            href="#seances"
+            className="rounded-[24px] px-2 py-3 text-white/75 transition hover:bg-white/10 hover:text-white"
+          >
+            <span className="block text-xl leading-none">◌</span>
+            <span className="mt-1 block text-[11px] font-medium">Séances</span>
           </a>
 
           <a
