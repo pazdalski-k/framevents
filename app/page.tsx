@@ -710,9 +710,17 @@ export default async function Home({
         <div className="rounded-[36px] border border-white/10 bg-[#111111] p-8 md:rounded-[40px] md:p-14">
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div>
-              <h3 className="mb-6 text-3xl font-bold">
+              <h3 className="mb-2 text-3xl font-bold">
                 Krzysztof Pazdalski
               </h3>
+
+              <p className="mb-3 text-lg font-medium tracking-wide text-white/75">
+                Photographe
+              </p>
+
+              <p className="mb-6 max-w-xl text-base leading-relaxed text-white/45">
+                Photographie d’événements, de sport et de personnes.
+              </p>
 
               <div className="space-y-4 text-lg text-white/60">
                 <p>📍 Caen, Normandie, France</p>
@@ -737,7 +745,17 @@ export default async function Home({
                   rel="noopener noreferrer"
                   className="block transition hover:text-white"
                 >
-                  📸 Instagram
+                  <span className="inline-flex items-center gap-3">
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      className="h-6 w-6"
+                      fill="currentColor"
+                    >
+                      <path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9Zm9.75 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>
+                    </svg>
+                    <span>Instagram</span>
+                  </span>
                 </a>
 
                 <a
