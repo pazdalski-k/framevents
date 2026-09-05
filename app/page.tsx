@@ -715,7 +715,14 @@ export default async function Home({
               </h3>
 
               <div className="space-y-4 text-lg text-white/60">
-                <p>📍 Normandie, France</p>
+                <p>📍 Caen, Normandie, France</p>
+
+                <a
+                  href="tel:+33668687565"
+                  className="block transition hover:text-white"
+                >
+                  📞 06 68 68 75 65
+                </a>
 
                 <a
                   href={`mailto:${contactEmail}`}
@@ -731,6 +738,13 @@ export default async function Home({
                   className="block transition hover:text-white"
                 >
                   📸 Instagram
+                </a>
+
+                <a
+                  href="/api/contact"
+                  className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition hover:scale-[1.03]"
+                >
+                  Ajouter aux contacts
                 </a>
               </div>
             </div>

@@ -20,6 +20,16 @@ function getSiteUrl(request: Request) {
   return PUBLIC_SITE_URL
 }
 
+function safePrice(value: unknown) {
+  const price = Number(value)
+
+  if (!Number.isFinite(price) || price <= 0) {
+    throw new Error('Invalid product price')
+  }
+
+  return Math.round(price * 100)
+}
+
 export async function POST(request: Request) {
   try {
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY
@@ -51,49 +61,68 @@ export async function POST(request: Request) {
 
     let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = []
 
+    /*
+     * FULL GALLERY
+     */
     if (type === 'gallery') {
       lineItems = [
         {
           quantity: 1,
           price_data: {
             currency: 'eur',
-            unit_amount: Math.round(Number(price) * 100),
+            unit_amount: safePrice(price),
             product_data: {
-              name: 'FramEvents Full Gallery Access',
+              name: 'FramEvents – Galerie complète',
               description:
-                eventTitle || 'Full event gallery access',
-            },
-          },
-        },
-      ]
-    } else if (Array.isArray(items) && items.length > 0) {
-      lineItems = items.map((item: CartItem) => ({
-        quantity: 1,
-        price_data: {
-          currency: 'eur',
-          unit_amount: Math.round(Number(item.price) * 100),
-          product_data: {
-            name: `FramEvents Photo #${item.photoId}`,
-            description: `Event ID: ${item.eventId}`,
-          },
-        },
-      }))
-    } else {
-      lineItems = [
-        {
-          quantity: 1,
-          price_data: {
-            currency: 'eur',
-            unit_amount: Math.round(Number(price) * 100),
-            product_data: {
-              name: `FramEvents Photo #${photoId}`,
-              description: `Event ID: ${eventId}`,
+                eventTitle || 'Accès à la galerie complète',
             },
           },
         },
       ]
     }
 
+    /*
+     * CART / MULTIPLE PHOTOS
+     */
+    else if (Array.isArray(items) && items.length > 0) {
+      lineItems = items.map((item: CartItem) => ({
+        quantity: 1,
+        price_data: {
+          currency: 'eur',
+          unit_amount: safePrice(item.price),
+          product_data: {
+            name: `FramEvents – Photo #${item.photoId}`,
+            description: `Événement #${item.eventId}`,
+          },
+        },
+      }))
+    }
+
+    /*
+     * SINGLE PHOTO
+     */
+    else {
+      lineItems = [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'eur',
+            unit_amount: safePrice(price),
+            product_data: {
+              name: `FramEvents – Photo #${photoId}`,
+              description: `Événement #${eventId}`,
+            },
+          },
+        },
+      ]
+    }
+
+    /*
+     * CHECKOUT SESSION
+     *
+     * Stripe collecte obligatoirement l'adresse
+     * de facturation et crée un Customer.
+     */
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
 
@@ -105,15 +134,47 @@ export async function POST(request: Request) {
 
       line_items: lineItems,
 
+      /*
+       * Données client nécessaires pour le reçu.
+       */
+      customer_creation: 'always',
+
+      billing_address_collection: 'required',
+
+      /*
+       * Numéro de téléphone facultatif.
+       * Il peut être utile pour identifier le client,
+       * mais nous ne le rendons pas obligatoire.
+       */
+      phone_number_collection: {
+        enabled: false,
+      },
+
+      /*
+       * Champ facultatif pour les clients professionnels.
+       */
+      custom_fields: [
+        {
+          key: 'company_name',
+          label: {
+            type: 'custom',
+            custom: "Nom de l'entreprise",
+          },
+          type: 'text',
+          optional: true,
+        },
+      ],
+
       metadata: {
         type:
           type === 'gallery'
             ? 'gallery'
             : Array.isArray(items) && items.length > 0
-            ? 'cart'
-            : 'single_photo',
+              ? 'cart'
+              : 'single_photo',
 
         photoId: photoId ? String(photoId) : '',
+
         eventId: eventId ? String(eventId) : '',
 
         items:
@@ -128,6 +189,7 @@ export async function POST(request: Request) {
       },
 
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+
       cancel_url: `${origin}/cancel`,
     })
 
