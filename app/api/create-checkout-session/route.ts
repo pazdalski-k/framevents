@@ -410,6 +410,10 @@ export async function POST(request: Request) {
 
       customer_creation: 'always',
 
+      invoice_creation: {
+        enabled: true,
+      },
+
       billing_address_collection: 'required',
 
       phone_number_collection: {
