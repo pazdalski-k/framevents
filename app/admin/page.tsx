@@ -538,6 +538,13 @@ const getEventUrl = (eventId: number) => {
         </button>
       </div>
 
+      <Link
+        href="/admin/visit-cards"
+        className="inline-flex items-center px-5 py-3 mb-8 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold transition"
+      >
+        Visit Cards
+      </Link>
+
       <div className="max-w-4xl mb-14 rounded-[32px] border border-white/10 bg-[#111111] p-6 md:p-8">
         <p className="uppercase tracking-[5px] text-white/40 text-xs mb-3">
           Événement rapide
