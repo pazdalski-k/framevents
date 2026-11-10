@@ -312,7 +312,7 @@ export default async function VisitCardPage({
 
             <div className="mx-auto mt-5 max-w-[220px] rounded-3xl bg-white p-4">
               <a
-                href={`/api/card/${card.slug}/vcard`}
+                href={`/card/${card.slug}/contact.vcf`}
                 className="mb-6 inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-[#d6a85f] px-6 py-4 font-semibold text-black transition hover:brightness-110"
               >
                 <span className="text-xl">＋</span>
