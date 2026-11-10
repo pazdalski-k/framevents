@@ -189,7 +189,7 @@ export default async function VisitCardPage({
           <div className="flex flex-col items-center text-center">
 
             {card.logo_url ? (
-              <img
+<img
                 src={card.logo_url}
                 alt={card.company || fullName}
                 className="h-24 w-24 rounded-3xl object-contain"
@@ -311,6 +311,14 @@ export default async function VisitCardPage({
             </p>
 
             <div className="mx-auto mt-5 max-w-[220px] rounded-3xl bg-white p-4">
+              <a
+                href={`/api/card/${card.slug}/vcard`}
+                className="mb-6 inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-6 py-4 font-semibold text-white transition hover:bg-white/15"
+              >
+                <span className="text-xl">＋</span>
+                Ajouter aux contacts
+              </a>
+              
               <img
                 src={qrUrl}
                 alt={`QR code ${fullName}`}
