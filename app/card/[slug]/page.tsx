@@ -317,14 +317,6 @@ export default async function VisitCardPage({
                 className="h-auto w-full"
               />
             </div>
-
-            <p
-              className={`mt-4 break-all text-center text-xs ${
-                isClassic ? 'text-black/35' : 'text-white/35'
-              }`}
-            >
-              {cardUrl}
-            </p>
           </div>
         </div>
 
