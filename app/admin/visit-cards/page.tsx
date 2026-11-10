@@ -47,6 +47,7 @@ const EMPTY_FORM = {
   whatsapp: '',
   bio: '',
   logo_url: '',
+  photo_url: '',
   theme: 'dark',
   brand_color: '#d6a85f',
   published: true,
@@ -63,6 +64,7 @@ export default function VisitCardsAdminPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState<'logo' | 'photo' | null>(null)
 
   const loadCards = async () => {
     setLoading(true)
@@ -99,6 +101,38 @@ export default function VisitCardsAdminPage() {
   const resetForm = () => {
     setForm(EMPTY_FORM)
     setEditingId(null)
+  }
+
+  const uploadAsset = async (
+    file: File,
+    kind: 'logo' | 'photo'
+  ) => {
+    setUploading(kind)
+
+    try {
+      const body = new FormData()
+      body.append('file', file)
+      body.append('kind', kind)
+
+      const response = await fetch('/api/admin/visit-card-upload', {
+        method: 'POST',
+        body,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        alert(data.error || "Erreur d'upload")
+        return
+      }
+
+      updateField(
+        kind === 'logo' ? 'logo_url' : 'photo_url',
+        data.url
+      )
+    } finally {
+      setUploading(null)
+    }
   }
 
   const saveCard = async (e: React.FormEvent) => {
@@ -157,6 +191,7 @@ export default function VisitCardsAdminPage() {
       whatsapp: card.whatsapp || '',
       bio: card.bio || '',
       logo_url: card.logo_url || '',
+      photo_url: card.photo_url || '',
       theme: card.theme || 'dark',
       brand_color: card.brand_color || '#d6a85f',
       published: card.published !== false,
@@ -409,14 +444,59 @@ export default function VisitCardsAdminPage() {
               className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4"
             />
 
-            <input
-              value={form.logo_url}
-              onChange={(e) =>
-                updateField('logo_url', e.target.value)
-              }
-              placeholder="URL du logo"
-              className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4"
-            />
+            <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
+              <p className="mb-3 font-semibold">Logo</p>
+
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) uploadAsset(file, 'logo')
+                }}
+              />
+
+              {uploading === 'logo' && (
+                <p className="mt-2 text-sm text-[#d6a85f]">
+                  Envoi du logo...
+                </p>
+              )}
+
+              {form.logo_url && (
+                <img
+                  src={form.logo_url}
+                  alt="Logo"
+                  className="mt-4 h-20 w-20 rounded-xl bg-white object-contain p-2"
+                />
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
+              <p className="mb-3 font-semibold">Photo</p>
+
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) uploadAsset(file, 'photo')
+                }}
+              />
+
+              {uploading === 'photo' && (
+                <p className="mt-2 text-sm text-[#d6a85f]">
+                  Envoi de la photo...
+                </p>
+              )}
+
+              {form.photo_url && (
+                <img
+                  src={form.photo_url}
+                  alt="Photo"
+                  className="mt-4 h-20 w-20 rounded-xl object-cover"
+                />
+              )}
+            </div>
           </div>
 
           <textarea
