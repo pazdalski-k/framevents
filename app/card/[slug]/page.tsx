@@ -105,7 +105,7 @@ function ContactTile({
       href={href}
       target={href.startsWith('http') ? '_blank' : undefined}
       rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-      className={`group relative flex min-h-[70px] sm:min-h-[82px] items-center overflow-hidden rounded-[22px] border px-5 py-4 transition ${
+      className={`group relative flex min-h-[70px] sm:min-h-[68px] sm:min-h-[82px] items-center overflow-hidden rounded-[22px] border px-4 py-3 transition sm:px-5 sm:py-4 ${
         primary
           ? 'text-black shadow-[0_8px_30px_rgba(0,0,0,0.16)]'
           : isClassic
@@ -138,7 +138,7 @@ function ContactTile({
       />
 
       <div
-        className={`relative z-10 flex h-12 w-12 shrink-0 items-center justify-center border-r pr-4 ${
+        className={`relative z-10 flex h-10 w-10 shrink-0 sm:h-12 sm:w-12 items-center justify-center border-r pr-4 ${
           primary
             ? 'border-black/20'
             : isClassic
@@ -150,7 +150,7 @@ function ContactTile({
         {icon}
       </div>
 
-      <div className="relative z-10 min-w-0 pl-5 text-left">
+      <div className="relative z-10 min-w-0 pl-3.5 text-left sm:pl-5">
         <div
           className={`text-[11px] font-semibold uppercase tracking-[2.5px] ${
             primary
@@ -163,7 +163,12 @@ function ContactTile({
           {title}
         </div>
 
-        <div className="mt-1 max-w-full break-all text-[14px] font-semibold leading-tight sm:text-[18px]">
+        <div
+          className="mt-1 min-w-0 whitespace-nowrap font-semibold leading-tight"
+          style={{
+            fontSize: 'clamp(12px, 3.7vw, 18px)',
+          }}
+        >
           {value}
         </div>
       </div>
@@ -417,7 +422,12 @@ export default async function VisitCardPage({
             )}
           </div>
 
-          <h1 className="mt-6 text-[27px] font-bold leading-[1.08] tracking-[-0.5px] sm:mt-7 sm:text-[38px]">
+          <h1
+            className="mt-6 whitespace-nowrap text-center font-bold leading-tight tracking-[-0.6px] sm:mt-7"
+            style={{
+              fontSize: 'clamp(22px, 7vw, 38px)',
+            }}
+          >
             {fullName}
           </h1>
 
