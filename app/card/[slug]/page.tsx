@@ -105,7 +105,7 @@ function ContactTile({
       href={href}
       target={href.startsWith('http') ? '_blank' : undefined}
       rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-      className={`group relative flex min-h-[82px] items-center overflow-hidden rounded-[22px] border px-5 py-4 transition ${
+      className={`group relative flex min-h-[70px] sm:min-h-[82px] items-center overflow-hidden rounded-[22px] border px-5 py-4 transition ${
         primary
           ? 'text-black shadow-[0_8px_30px_rgba(0,0,0,0.16)]'
           : isClassic
@@ -163,7 +163,7 @@ function ContactTile({
           {title}
         </div>
 
-        <div className="mt-1 truncate text-[17px] font-semibold sm:text-[18px]">
+        <div className="mt-1 max-w-full break-all text-[14px] font-semibold leading-tight sm:text-[18px]">
           {value}
         </div>
       </div>
@@ -389,7 +389,7 @@ export default async function VisitCardPage({
 
         <div className="relative z-10 text-center">
           <div
-            className="mx-auto flex h-[132px] w-[132px] items-center justify-center overflow-hidden rounded-full border-2"
+            className="mx-auto flex h-[108px] w-[108px] sm:h-[132px] sm:w-[132px] items-center justify-center overflow-hidden rounded-full border-2"
             style={{
               borderColor: accent,
               boxShadow: isClassic
@@ -417,7 +417,7 @@ export default async function VisitCardPage({
             )}
           </div>
 
-          <h1 className="mt-7 text-[32px] font-bold leading-tight tracking-[-0.8px] sm:text-[38px]">
+          <h1 className="mt-6 text-[27px] font-bold leading-[1.08] tracking-[-0.5px] sm:mt-7 sm:text-[38px]">
             {fullName}
           </h1>
 
@@ -461,7 +461,7 @@ export default async function VisitCardPage({
           )}
         </div>
 
-        <div className="relative z-10 mt-9 grid gap-3.5">
+        <div className="relative z-10 mt-7 grid gap-3 sm:mt-9 sm:gap-3.5">
           {card.show_phone && card.phone && (
             <ContactTile
               href={`tel:${card.phone}`}
@@ -579,7 +579,7 @@ export default async function VisitCardPage({
 
           <a
             href={`/card/${card.slug}/contact.vcf`}
-            className="mx-auto mt-6 flex min-h-[60px] max-w-[420px] items-center justify-center gap-3 rounded-full px-6 text-base font-bold text-black shadow-lg transition hover:brightness-110"
+            className="mx-auto mt-5 flex min-h-[54px] max-w-[390px] sm:min-h-[60px] sm:max-w-[420px] items-center justify-center gap-3 rounded-full px-6 text-base font-bold text-black shadow-lg transition hover:brightness-110"
             style={{
               background: `linear-gradient(115deg, ${accent} 0%, ${accent}e5 60%, ${accent}bd 100%)`,
               boxShadow: `inset 0 1px 0 rgba(255,255,255,.40), 0 10px 35px ${accent}25`,
@@ -590,7 +590,7 @@ export default async function VisitCardPage({
           </a>
 
           <div
-            className={`mx-auto mt-7 w-fit rounded-[28px] border p-4 ${
+            className={`mx-auto mt-9 w-fit rounded-[28px] border p-4 ${
               isClassic
                 ? 'border-black/10 bg-white'
                 : 'border-white/10 bg-[#111111]'
@@ -609,13 +609,13 @@ export default async function VisitCardPage({
               alt={`QR code ${fullName}`}
               width={250}
               height={250}
-              className="h-[220px] w-[220px] rounded-2xl bg-white sm:h-[240px] sm:w-[240px]"
+              className="h-[185px] w-[185px] rounded-2xl bg-white sm:h-[220px] sm:w-[220px]"
             />
           </div>
         </div>
       </div>
 
-      <p className="relative z-10 mt-7 text-center text-sm text-white/25">
+      <p className="relative z-10 mt-7 text-center text-sm text-white/30">
         Powered by FramEvents
       </p>
     </main>
