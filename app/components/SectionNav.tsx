@@ -12,6 +12,7 @@ export default function SectionNav({
   variant: 'desktop' | 'mobile'
 }) {
   const [active, setActive] = useState<SectionId>('events')
+  const [hovered, setHovered] = useState<SectionId | 'instagram' | null>(null)
 
   useEffect(() => {
     const syncHash = () => {
@@ -41,15 +42,22 @@ export default function SectionNav({
 
   if (variant === 'desktop') {
     const desktopClass = (id: SectionId) =>
-      active === id
+      (hovered ?? active) === id
         ? 'rounded-full border border-[#d6a85f] bg-[#d6a85f] px-6 py-3 text-sm font-medium text-black backdrop-blur-xl transition'
-        : 'rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f] hover:bg-[#d6a85f] hover:text-black'
+        : 'rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition'
+
+    const instagramClass =
+      hovered === 'instagram'
+        ? 'rounded-full border border-[#d6a85f] bg-[#d6a85f] px-6 py-3 text-sm font-medium text-black backdrop-blur-xl transition'
+        : 'rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition'
 
     return (
       <div className="hidden items-center gap-3 md:flex">
         <a
           href="#events"
           onClick={() => choose('events')}
+          onMouseEnter={() => setHovered('events')}
+          onMouseLeave={() => setHovered(null)}
           className={desktopClass('events')}
         >
           Galeries
@@ -58,6 +66,8 @@ export default function SectionNav({
         <a
           href="#seances"
           onClick={() => choose('seances')}
+          onMouseEnter={() => setHovered('seances')}
+          onMouseLeave={() => setHovered(null)}
           className={desktopClass('seances')}
         >
           Séances
@@ -66,6 +76,8 @@ export default function SectionNav({
         <a
           href="#qr"
           onClick={() => choose('qr')}
+          onMouseEnter={() => setHovered('qr')}
+          onMouseLeave={() => setHovered(null)}
           className={desktopClass('qr')}
         >
           QR Code
@@ -74,6 +86,8 @@ export default function SectionNav({
         <a
           href="#contact"
           onClick={() => choose('contact')}
+          onMouseEnter={() => setHovered('contact')}
+          onMouseLeave={() => setHovered(null)}
           className={desktopClass('contact')}
         >
           Contact
@@ -83,7 +97,9 @@ export default function SectionNav({
           href={instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f] hover:bg-[#d6a85f] hover:text-black"
+          onMouseEnter={() => setHovered('instagram')}
+          onMouseLeave={() => setHovered(null)}
+          className={instagramClass}
         >
           Instagram
         </a>
