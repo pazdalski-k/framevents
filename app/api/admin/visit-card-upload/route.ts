@@ -115,3 +115,67 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+
+export async function DELETE(request: NextRequest) {
+  if (!isAdmin(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    )
+  }
+
+  try {
+    const body = await request.json()
+    const url = typeof body.url === 'string' ? body.url : ''
+
+    if (!url) {
+      return NextResponse.json(
+        { error: 'Missing file URL' },
+        { status: 400 }
+      )
+    }
+
+    const marker = `/storage/v1/object/public/${BUCKET}/`
+    const markerIndex = url.indexOf(marker)
+
+    if (markerIndex === -1) {
+      return NextResponse.json(
+        { error: 'Invalid file URL' },
+        { status: 400 }
+      )
+    }
+
+    const encodedPath = url
+      .slice(markerIndex + marker.length)
+      .split('?')[0]
+
+    const filePath = decodeURIComponent(encodedPath)
+
+    const supabase = getSupabaseAdmin()
+
+    const { error } = await supabase.storage
+      .from(BUCKET)
+      .remove([filePath])
+
+    if (error) {
+      console.error('VISIT CARD DELETE ERROR:', error)
+
+      return NextResponse.json(
+        { error: 'Could not delete file' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+    })
+  } catch (error) {
+    console.error('VISIT CARD DELETE ERROR:', error)
+
+    return NextResponse.json(
+      { error: 'Server error' },
+      { status: 500 }
+    )
+  }
+}

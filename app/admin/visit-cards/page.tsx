@@ -137,6 +137,79 @@ export default function VisitCardsAdminPage() {
     }
   }
 
+  const removeAsset = async (
+    kind: 'logo' | 'photo'
+  ) => {
+    const field = kind === 'logo' ? 'logo_url' : 'photo_url'
+    const currentUrl = form[field]
+
+    if (!currentUrl) return
+
+    const message =
+      kind === 'logo'
+        ? 'Supprimer le logo ?'
+        : 'Supprimer la photo ?'
+
+    if (!confirm(message)) return
+
+    setUploading(kind)
+
+    try {
+      const nextForm = {
+        ...form,
+        [field]: '',
+      }
+
+      // Najpierw wyczyść URL w bazie
+      if (editingId) {
+        const saveResponse = await fetch('/api/admin/visit-cards', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...nextForm,
+            id: editingId,
+            subscription_price: nextForm.subscription_price
+              ? Number(nextForm.subscription_price)
+              : null,
+          }),
+        })
+
+        const saveData = await saveResponse.json()
+
+        if (!saveResponse.ok) {
+          alert(saveData.error || "Erreur de suppression")
+          return
+        }
+      }
+
+      setForm(nextForm)
+
+      // Następnie usuń sam plik ze Storage
+      const deleteResponse = await fetch(
+        '/api/admin/visit-card-upload',
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url: currentUrl,
+          }),
+        }
+      )
+
+      if (!deleteResponse.ok) {
+        console.warn(
+          "L'image a été retirée de la carte, mais le fichier n'a pas pu être supprimé du stockage."
+        )
+      }
+    } finally {
+      setUploading(null)
+    }
+  }
+
   const saveCard = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -478,11 +551,22 @@ export default function VisitCardsAdminPage() {
               )}
 
               {form.logo_url && (
-                <img
-                  src={form.logo_url}
-                  alt="Logo"
-                  className="mt-4 h-20 w-20 rounded-xl bg-white object-contain p-2"
-                />
+                <div className="mt-4 flex items-center gap-4">
+                  <img
+                    src={form.logo_url}
+                    alt="Logo"
+                    className="h-20 w-20 rounded-xl bg-white object-contain p-2"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => removeAsset('logo')}
+                    disabled={uploading !== null}
+                    className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 hover:bg-red-500/20 disabled:opacity-50"
+                  >
+                    Supprimer le logo
+                  </button>
+                </div>
               )}
             </div>
 
@@ -505,11 +589,22 @@ export default function VisitCardsAdminPage() {
               )}
 
               {form.photo_url && (
-                <img
-                  src={form.photo_url}
-                  alt="Photo"
-                  className="mt-4 h-20 w-20 rounded-xl object-cover"
-                />
+                <div className="mt-4 flex items-center gap-4">
+                  <img
+                    src={form.photo_url}
+                    alt="Photo"
+                    className="h-20 w-20 rounded-xl object-cover"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => removeAsset('photo')}
+                    disabled={uploading !== null}
+                    className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 hover:bg-red-500/20 disabled:opacity-50"
+                  >
+                    Supprimer la photo
+                  </button>
+                </div>
               )}
             </div>
           </div>

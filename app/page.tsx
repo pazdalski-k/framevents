@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from './lib/supabase'
 import SelfieUploadBox from './components/SelfieUploadBox'
+import SectionNav from './components/SectionNav'
 
 export const dynamic = 'force-dynamic'
 
@@ -110,44 +111,7 @@ export default async function Home({
               </div>
             </div>
 
-            <div className="hidden items-center gap-3 md:flex">
-              <a
-                href="#events"
-                className="rounded-full border border-[#d6a85f]/60 bg-black/25 px-6 py-3 text-sm font-medium text-white backdrop-blur-xl transition hover:border-[#d6a85f] hover:bg-[#d6a85f] hover:text-black"
-              >
-                Galeries
-              </a>
-
-              <a
-                href="#seances"
-                className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f]/70 hover:text-white"
-              >
-                Séances
-              </a>
-
-              <a
-                href="#qr"
-                className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f]/70 hover:text-white"
-              >
-                QR Code
-              </a>
-
-              <a
-                href="#contact"
-                className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f]/70 hover:text-white"
-              >
-                Contact
-              </a>
-
-              <a
-                href={instagramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm font-medium text-white/85 backdrop-blur-xl transition hover:border-[#d6a85f]/70 hover:text-white"
-              >
-                Instagram
-              </a>
-            </div>
+            <SectionNav instagramUrl={instagramUrl} variant="desktop" />
           </nav>
 
           <div className="flex flex-1 items-end pb-20 md:items-center md:pb-0">
@@ -855,51 +819,7 @@ export default async function Home({
         </div>
       </footer>
 
-      <nav className="fixed inset-x-4 bottom-4 z-50 rounded-[32px] border border-white/15 bg-black/78 px-3 py-3 shadow-[0_20px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl md:hidden">
-        <div className="grid grid-cols-5 gap-1 text-center">
-          <a
-            href="#events"
-            className="rounded-[24px] border border-[#d6a85f]/60 bg-[#d6a85f]/10 px-2 py-3 text-[#d6a85f]"
-          >
-            <span className="block text-xl leading-none">▧</span>
-            <span className="mt-1 block text-[11px] font-medium">Galeries</span>
-          </a>
-
-          <a
-            href="#seances"
-            className="rounded-[24px] px-2 py-3 text-white/75 transition hover:bg-white/10 hover:text-white"
-          >
-            <span className="block text-xl leading-none">◌</span>
-            <span className="mt-1 block text-[11px] font-medium">Séances</span>
-          </a>
-
-          <a
-            href="#qr"
-            className="rounded-[24px] px-2 py-3 text-white/75 transition hover:bg-white/10 hover:text-white"
-          >
-            <span className="block text-xl leading-none">⌗</span>
-            <span className="mt-1 block text-[11px] font-medium">QR</span>
-          </a>
-
-          <a
-            href="#contact"
-            className="rounded-[24px] px-2 py-3 text-white/75 transition hover:bg-white/10 hover:text-white"
-          >
-            <span className="block text-xl leading-none">✉</span>
-            <span className="mt-1 block text-[11px] font-medium">Contact</span>
-          </a>
-
-          <a
-            href={instagramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[24px] px-2 py-3 text-white/75 transition hover:bg-white/10 hover:text-white"
-          >
-            <span className="block text-xl leading-none">◎</span>
-            <span className="mt-1 block text-[11px] font-medium">Instagram</span>
-          </a>
-        </div>
-      </nav>
+      <SectionNav instagramUrl={instagramUrl} variant="mobile" />
     </main>
   )
 }
