@@ -67,6 +67,7 @@ export default function VisitCardsAdminPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState<'logo' | 'photo' | null>(null)
+  const [clientSearch, setClientSearch] = useState('')
 
   const loadCards = async () => {
     setLoading(true)
@@ -340,6 +341,29 @@ export default function VisitCardsAdminPage() {
       className: 'text-green-400',
     }
   }
+
+  const normalizedClientSearch = clientSearch
+    .trim()
+    .toLocaleLowerCase('fr-FR')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+
+  const filteredCards = cards.filter((card) => {
+    if (!normalizedClientSearch) return true
+
+    const firstName = card.first_name || ''
+    const lastName = card.last_name || ''
+
+    const clientName = `
+      ${firstName} ${lastName}
+      ${lastName} ${firstName}
+    `
+      .toLocaleLowerCase('fr-FR')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+
+    return clientName.includes(normalizedClientSearch)
+  })
 
   return (
     <main className="min-h-screen bg-black px-4 py-8 text-white md:px-10">
@@ -752,6 +776,37 @@ export default function VisitCardsAdminPage() {
             Clients
           </h2>
 
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#111] px-4 py-3">
+            <span className="text-xl text-[#d6a85f]">
+              ⌕
+            </span>
+
+            <input
+              type="search"
+              value={clientSearch}
+              onChange={(e) => setClientSearch(e.target.value)}
+              placeholder="Rechercher par prénom ou nom..."
+              className="min-w-0 flex-1 bg-transparent py-2 text-white outline-none placeholder:text-white/35"
+            />
+
+            {clientSearch && (
+              <button
+                type="button"
+                onClick={() => setClientSearch('')}
+                className="rounded-xl bg-white/5 px-3 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
+                aria-label="Effacer la recherche"
+              >
+                ✕
+              </button>
+            )}
+
+            {!loading && (
+              <span className="hidden text-sm text-white/35 sm:block">
+                {filteredCards.length} / {cards.length}
+              </span>
+            )}
+          </div>
+
           {loading ? (
             <p className="text-white/50">
               Chargement...
@@ -760,9 +815,13 @@ export default function VisitCardsAdminPage() {
             <p className="text-white/50">
               Aucune Visit Card.
             </p>
+          ) : filteredCards.length === 0 ? (
+            <div className="rounded-2xl border border-white/10 bg-[#111] p-6 text-white/50">
+              Aucun client trouvé pour « {clientSearch} ».
+            </div>
           ) : (
             <div className="grid gap-4">
-              {cards.map((card) => {
+              {filteredCards.map((card) => {
                 const status = subscriptionStatus(
                   card.subscription_end_date
                 )
