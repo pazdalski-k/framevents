@@ -99,6 +99,7 @@ function prepareCardPayload(body: Record<string, unknown>) {
 
     published: body.published !== false,
     show_address: body.show_address === true,
+    show_3d_promo: body.show_3d_promo !== false,
 
     subscription_start_date: emptyToNull(
       body.subscription_start_date

@@ -33,6 +33,7 @@ type VisitCard = {
   show_instagram: boolean | null
   show_facebook: boolean | null
   show_whatsapp: boolean | null
+  show_3d_promo: boolean | null
   published: boolean | null
 }
 
@@ -622,6 +623,25 @@ export default async function VisitCardPage({
               className="h-[185px] w-[185px] rounded-2xl bg-white sm:h-[220px] sm:w-[220px]"
             />
           </div>
+
+          {card.show_3d_promo !== false && (
+            <div className="mt-4 text-center">
+              <a
+                href="/card/test-framevents"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex min-h-[36px] items-center justify-center rounded-full border px-4 py-2 text-[12px] font-semibold tracking-[0.3px] opacity-70 transition hover:opacity-100 ${
+                  isClassic ? 'bg-black/[0.02]' : 'bg-white/[0.015]'
+                }`}
+                style={{
+                  borderColor: `${accent}55`,
+                  color: accent,
+                }}
+              >
+                Impression 3D
+              </a>
+            </div>
+          )}
         </div>
       </div>
 

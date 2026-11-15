@@ -25,6 +25,7 @@ type VisitCard = {
   brand_color: string | null
   published: boolean | null
   show_address: boolean | null
+  show_3d_promo: boolean | null
   subscription_start_date: string | null
   subscription_end_date: string | null
   subscription_plan: string | null
@@ -53,6 +54,7 @@ const EMPTY_FORM = {
   brand_color: '#d6a85f',
   published: true,
   show_address: false,
+  show_3d_promo: true,
   subscription_start_date: '',
   subscription_end_date: '',
   subscription_plan: 'Premium',
@@ -272,6 +274,7 @@ export default function VisitCardsAdminPage() {
       brand_color: card.brand_color || '#d6a85f',
       published: card.published !== false,
       show_address: card.show_address === true,
+      show_3d_promo: card.show_3d_promo !== false,
       subscription_start_date: card.subscription_start_date || '',
       subscription_end_date: card.subscription_end_date || '',
       subscription_plan: card.subscription_plan || 'Premium',
@@ -756,6 +759,21 @@ export default function VisitCardsAdminPage() {
             />
 
             <span>Carte publiée et accessible par QR / NFC</span>
+          </label>
+
+          <label className="mt-4 flex items-center gap-4 rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
+            <input
+              type="checkbox"
+              checked={form.show_3d_promo}
+              onChange={(e) =>
+                updateField('show_3d_promo', e.target.checked)
+              }
+              className="h-5 w-5"
+            />
+
+            <span>
+              Afficher le bouton « Impression 3D »
+            </span>
           </label>
 
           <button
